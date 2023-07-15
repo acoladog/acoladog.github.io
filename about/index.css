@@ -1,0 +1,12 @@
+img{
+    border-radius: 15px;
+}
+.cft {
+    border: none;
+    padding: unset;
+    background: transparent;
+}
+.cft1 {
+    width:50px;
+    border-radius: 25px;
+}

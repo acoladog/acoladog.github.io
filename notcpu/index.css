@@ -1,0 +1,48 @@
+.Header{
+    width: 1000px;
+    height: 150px;
+    display:block;
+    margin:auto;
+    border-radius: 15px;
+    background-color: rgb(255, 196, 0);
+}
+.logo{
+    width: 1000px;
+    height: 150px;
+}
+body{
+    background-color: brown;
+}
+
+.topnav {
+    background-color: #333;
+    overflow: hidden;
+    width: 995px;
+    display:block;
+    margin:auto;
+  }
+  
+  /* Style the links inside the navigation bar */
+.topnav a {
+    border-radius: 5px;
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 140px;
+    text-decoration: none;
+    font-size: 17px;
+  }
+  
+  /* Change the color of links on hover */
+.topnav a:hover {
+    border-radius: 5px;
+    background-color: #ddd;
+    color: black;
+  }
+  
+  /* Add a color to the active/current link */
+.topnav a.active {
+    border-radius: 5px;
+    background-color: #3d7b61;
+    color: white;
+  }

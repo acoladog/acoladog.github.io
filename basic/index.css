@@ -1,0 +1,120 @@
+@font-face {
+    font-family: "font";
+    src: url("/basic/Happy School.woff");
+}
+
+.Header{
+    width: 1000px;
+    height: 150px;
+    display:
+    block;
+    margin:
+    auto;
+    margin-top: 60px;
+    border-radius: 15px;
+    background-color: #e2ca1d;
+}
+.logo{
+    width: 1000px;
+    height: 150px;
+}
+body{
+    background-color: brown;
+}
+
+.topnav {
+    background-color: #333;
+    width: 100vw;
+    overflow: hidden;
+    display:
+    flex;
+    margin:
+    auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+tz {
+    cursor: pointer;
+    color: #f2f2f2;
+    font-size: 17px;
+}
+
+.inter {
+    background-color: #8e2424;
+    width: 1000px;
+    display: block;
+    margin: auto;
+    word-break: break-all;
+    font-size: 30px;
+    color: rgb(90 213 213);
+	padding:0px 0px 10px 0px;
+}
+.ointer {
+    background-color: #782020;
+    width: 980px;
+    display: block;
+    margin: auto;
+    word-break: break-all;
+    font-size: 30px;
+    color: rgb(90 213 213);
+}
+::-webkit-scrollbar-track{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #333333;
+}
+::-webkit-scrollbar-thumb {
+    cursor: default;
+    background-color: #a1a1a1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #888888;
+}
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+.wqe{
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 23vw;
+    height: 100vh;
+    transform: translate3d(-150%, 0, 0);
+    transition-duration: 0.5s;
+    display: flex;
+    flex-direction: column;
+    background: #7febde;
+    z-index: 1;
+}
+#wfe{
+    background: transparent;
+    border: none;
+    padding: unset;
+}
+tz.eir {
+    font-size: 4vw;
+    padding: 1vw;
+    font-weight: bolder;
+    text-shadow: 0.1em 0.1em 0.2em #8f2c2c;
+    font-family: font;
+    -webkit-text-stroke: 1px #607272;
+    -webkit-text-fill-color: #692d2d;
+}
+tz.eir:hover {
+    font-size: 4vw;
+    padding: 1vw;
+    font-weight: bolder;
+    text-shadow: 0.1em 0.1em 0.2em #fff;
+    font-family: font;
+    -webkit-text-stroke: 1px #607272;
+    -webkit-text-fill-color: #b19e9e;
+}
+.bw {
+	color: rgb(255, 162, 0);
+	font-size: 40px;
+}
