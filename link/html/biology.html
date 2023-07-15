@@ -7,6 +7,7 @@
             function macabaca() {
                 var a,c='',d,e,f;
                 a=prompt('請輸入英文串', '');
+                a=a.toLocaleLowerCase(a);
                 if(a==null||"") window.alert("已取消輸入");
                 else {
                     for(let i=0;i<a.length;i++){
@@ -15,7 +16,6 @@
                             if(b[j].length==2&&a[i]==b[j].substr(0,1)&&a[i+1]==b[j].substr(1,2)){
                                 d=j;
                                 e=1;
-                                i++;
                                 break;
                             }
                         }
@@ -24,10 +24,10 @@
                                 if(a[i]==b[j]){
                                     e=1;
                                     d=j;
-                                    break;
                                 }
                             }
                         }
+                        if(e==1&&b[d].length==2) i++;
                         if(e==1) c+=g[d];
                         else c+=a[i];
                     }
@@ -73,11 +73,10 @@
             }
             h1{
                 font-size: 700%;
-                margin-bottom: 1%;
+                margin: 0%;
             }
             a{
                 font-size: 400%;
-                margin-bottom: 2.5%;
                 border-radius: 10px;
                 border: 3px solid #e8e8e8;
                 background-color: #303030;
@@ -88,14 +87,33 @@
                 background-color: #737373;
             }
             input{
-                margin-top: 2.5%;
-                margin-bottom: 2.5%;
                 font-size: 400%;
                 border-radius: 10px;
             }
             p{
                 font-size: 300%;
                 display: inline;
+            }
+            div{
+                margin-top: 2.5%;
+                margin-bottom: 2.5%;
+            }
+            ::-webkit-scrollbar-track{
+                -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+                border-radius: 10px;
+                background-color: #333333;
+            }
+            ::-webkit-scrollbar-thumb {
+                cursor: default;
+                background-color: #a1a1a1;
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: #888888;
+            }
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
             }
         </style>
     </head>
@@ -104,6 +122,7 @@
             <div><a onclick="macabaca()">Macabaca</a><a onclick="micawaca()">Micawaca</a></div>
             <div><p>轉換到這：</p><input value="" readonly></div>
             <div><a onclick="cop()">Copy!</a></div>
+            <div><p>花園寶寶語：</p><br><p>Macabaca：英轉中</p><br><p>Micawaca：中轉英</p></div>
        
     </body>
 </html>
