@@ -5,9 +5,8 @@
             var b=['h','li','na','k','rb','cs','fr','be','mg','ca','sr','ba','ra','sc','y','ti','zr','hf','rf','v','nb','ta','db','cr','mo','w','sg','mn','tc','re','bh','fe','ru','os','hs','co','rh','ir','mt','ni','pd','pt','ds','cu','ag','au','rg','zn','cd','hg','cn','b','al','ga','in','tl','nh','c','si','ge','sn','pb','fl','n','p','as','sb','bi','mc','o','s','se','te','po','lv','f','cl','br','i','at','ts','he','ne','ar','kr','xe','rn','og','la','ce','pr','nd','pm','sm','eu','gd','tb','dy','ho','er','tm','yb','lu','ac','th','pa','u','np','pu','am','cm','bk','cf','es','fm','md','no','lr'];
             var g=['氫','鋰','鈉','鉀','銣','銫','鍅','鈹','鎂','鈣','鍶','鋇','鐳','鈧','釔','鈦','鋯','鉿','鑪','釩','鈮','鉭','𨧀','鉻','鉬','鎢','𨭎','錳','鎝','錸','𨨏','鐵','釕','鋨','𨭆','鈷','銠','銥','䥑','鎳','鈀','鉑','鐽','銅','銀','金','錀','鋅','鎘','汞','鎶','硼','鋁','鎵','銦','鉈','鉨','碳','矽','鍺','錫','鉛','鈇','氮','磷','砷','銻','鉍','鏌','氧','硫','硒','碲','釙','鉝','氟','氯','溴','碘','砈','ㄊㄧㄢˊ','氦','氖','氬','氪','氙','氡','ㄠˋ','鑭','鈰','鐠','釹','鉕','釤','銪','釓','鋱','鏑','鈥','鉺','銩','鐿','鎦','錒','釷','鏷','鈾','錼','鈽','鋂','鋦','鉳','鉲','鑀','鐨','鍆','鍩','鐒'];
             function macabaca() {
-                var a,c='',d,e,f;
-                a=prompt('請輸入英文串', '');
-                a=a.toLocaleLowerCase(a);
+                var a=document.querySelector('.into').value,c='',d,e,f;
+                a=a.toLocaleLowerCase();
                 if(a==null||"") window.alert("已取消輸入");
                 else {
                     for(let i=0;i<a.length;i++){
@@ -31,19 +30,18 @@
                         if(e==1) c+=g[d];
                         else c+=a[i];
                     }
-                    //alert("中文在這\n"+c);
-                    document.querySelector('input').value=c;
+                    document.querySelector('.trans').value=c;
                     c='';
                 };
             }
             function cop(){
-                const a = document.querySelector('input');
+                const a = document.querySelector('.trans');
                 a.select();
                 document.execCommand('copy');
                 alert("已複製");
             }
             function micawaca(){
-                var a=prompt('請輸入化學元素', ''),c,e,d;
+                var a=document.querySelector('.into').value,c,e,d;
                 if(a==null||"") window.alert("已取消輸入");
                 else {
                     for(let i=0;i<a.length;i++){
@@ -58,7 +56,7 @@
                         if(e==1) c+=b[d];
                         else c+=a[i];
                     }
-                    document.querySelector('input').value=c.substr(9,c.end);
+                    document.querySelector('.trans').value=c.substr(9,c.end);
                     c='';
                 }
             }
@@ -119,8 +117,9 @@
     </head>
     <body>
             <div><h1>In the night garden!</h1></div>
+            <div><p>輸入文字：</p><input value="" class="into"></div>
             <div><a onclick="macabaca()">Macabaca</a><a onclick="micawaca()">Micawaca</a></div>
-            <div><p>轉換到這：</p><input value="" readonly></div>
+            <div><p>轉換到這：</p><input value="" class="trans"readonly></div>
             <div><a onclick="cop()">Copy!</a></div>
             <div><p>花園寶寶語：</p><br><p>Macabaca：英轉中</p><br><p>Micawaca：中轉英</p></div>
        
