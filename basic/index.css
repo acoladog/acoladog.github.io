@@ -120,16 +120,16 @@ tz.eir:hover {
 	font-size: 40px;
 }
 a{
-font-size: 40px;
-border-radius: 20px;
-border: 3px solid #ff8f8f;
-background-color: #303030;
-padding: 10px;
-color:#b0b0b0;
-text-decoration:none;
-display:flex;
+    font-size: 40px;
+    border-radius: 20px;
+    border: 3px solid #ff8f8f;
+    background-color: #303030;
+    padding: 10px;
+    color:#b0b0b0;
+    text-decoration:none;
+    display:flex;
 }
 a:hover{
-background-color: #8e4e4e;
-color:white;
+    background-color: #8e4e4e;
+    color:white;
 }
