@@ -43,14 +43,15 @@ tz {
 }
 
 .inter {
-    background-color: #8e2424;
+    background-color: #751e1e;
     width: 1000px;
     display: block;
     margin: auto;
+	margin-top:10px;
     word-break: break-all;
     font-size: 30px;
     color: rgb(90 213 213);
-	padding:0px 0px 10px 0px;
+	padding:10px 10px 10px 10px;
 }
 .ointer {
     background-color: #782020;
@@ -119,15 +120,14 @@ tz.eir:hover {
 	font-size: 40px;
 }
 a{
-font-size: 300%;
+font-size: 40px;
 border-radius: 20px;
 border: 3px solid #ff8f8f;
 background-color: #303030;
-padding: 30px;
+padding: 10px;
 color:#b0b0b0;
 text-decoration:none;
-margin-top:20%
-
+display:flex;
 }
 a:hover{
 background-color: #8e4e4e;
