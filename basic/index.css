@@ -1,9 +1,6 @@
 * {
 font-family: "Comic Sans MS", 標楷體;
 }
-@font-face {
-    src: url("/basic/Happy School.woff");
-}
 
 .Header{
     width: 1000px;
