@@ -1,3 +1,6 @@
+* {
+font-family: "Comic Sans MS", 標楷體;
+}
 @font-face {
     font-family: "font";
     src: url("/basic/Happy School.woff");
