@@ -36,6 +36,7 @@ body{
     top: 0;
     left: 0;
     z-index: 1;
+	box-shadow:0px 5px 10px #000;
 }
 
 tz {
@@ -54,6 +55,7 @@ tz {
     font-size: 30px;
     color: rgb(90 213 213);
 	padding:10px 10px 10px 10px;
+	border-radius:10px;
 }
 .ointer {
     background-color: #782020;
@@ -87,12 +89,12 @@ tz {
     left: 0;
     width: 23vw;
     height: 100vh;
-    transform: translate3d(-150%, 0, 0);
     transition-duration: 0.5s;
     display: flex;
     flex-direction: column;
     background: #7febde;
     z-index: 1;
+	box-shadow:7px 0px 5px #3c716c;
 }
 #wfe{
     background: transparent;
