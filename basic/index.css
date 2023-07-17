@@ -3,19 +3,15 @@ font-family: "Comic Sans MS", 標楷體;
 }
 
 .Header{
-    width: 1000px;
-    height: 150px;
-    display:
-    block;
-    margin:
-    auto;
-    margin-top: 60px;
+    display:block;
+    margin:auto;
+    margin-top: 1%;
     border-radius: 15px;
     background-color: #a2782b;
+    z-index:1;
 }
 .logo{
-    width: 1000px;
-    height: 150px;
+    display:flex;
 }
 body{
     background-color: brown;
@@ -23,17 +19,17 @@ body{
 
 .topnav {
     background-color: #333;
-    width: 100vw;
     overflow: hidden;
-    display:
-    flex;
-    margin:
-    auto;
+    display:flex;
+    margin:auto;
+    margin-top:1%
     position: fixed;
     top: 0;
     left: 0;
     z-index: 1;
     box-shadow:0px 5px 10px #000;
+    border-radius:10px;
+    z-index:0;
 }
 
 tz {
@@ -44,7 +40,6 @@ tz {
 
 .inter {
     background-color: #751e1e;
-    width: 1000px;
     display: block;
     margin: auto;
     margin-top:10px;
@@ -82,16 +77,17 @@ tz {
 }
 .wqe{
     position: fixed;
-    top: 50px;
+    top: 80px;
     left: 0;
     width: 23vw;
-    height: 100vh;
+    height: 100%;
     transition-duration: 0.5s;
     display: flex;
     flex-direction: column;
-    background: #7febde;
-    z-index: 1;
-    box-shadow:7px 0px 5px #3c716c;
+    background: #b23333;
+    box-shadow:7px 1px 5px #471212;
+    z-index:2;
+    border-radius:10px;
 }
 #wfe{
     background: transparent;
@@ -102,8 +98,8 @@ tz.eir {
     font-size: 4vw;
     padding: 1vw;
     font-weight: bolder;
-    text-shadow: 0.1em 0.1em 0.2em #8f2c2c;
-    -webkit-text-stroke: 1px #607272;
+    text-shadow: 0.1em 0.1em 0.2em #f9b2b2;
+    -webkit-text-stroke: 1px #f9bab0;
     -webkit-text-fill-color: #692d2d;
 }
 tz.eir:hover {
@@ -111,8 +107,8 @@ tz.eir:hover {
     padding: 1vw;
     font-weight: bolder;
     text-shadow: 0.1em 0.1em 0.2em #fff;
-    -webkit-text-stroke: 1px #607272;
-    -webkit-text-fill-color: #b19e9e;
+    -webkit-text-stroke: 1px #a9756c;
+    -webkit-text-fill-color: #fec9c9;
 }
 .bw {
     color: rgb(255, 162, 0);
