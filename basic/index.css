@@ -84,7 +84,7 @@ tz {
     transition-duration: 0.5s;
     display: flex;
     flex-direction: column;
-    background: #b23333;
+    background: #d03a3a;
     box-shadow:7px 1px 5px #471212;
     z-index:2;
     border-radius:10px;
@@ -92,7 +92,6 @@ tz {
 #wfe{
     background: transparent;
     border: none;
-    padding: unset;
 }
 tz.eir {
     font-size: 4vw;
@@ -114,7 +113,7 @@ tz.eir:hover {
     color: rgb(255, 162, 0);
     font-size: 40px;
 }
-a{
+a.bu{
     font-size: 40px;
     border-radius: 20px;
     border: 3px solid #ff8f8f;
@@ -124,10 +123,26 @@ a{
     text-decoration:none;
     display:flex;
 }
-a:hover{
+a.bu:hover{
     background-color: #8e4e4e;
     color:white;
 }
 .hom {
     height: 50px;
+    color: white;
+    font-size: 30px;
+    position: absolute;
+    left: 75px;
+    top: 10px;
+    user-select: none;
+    border-radius: 5px;
+    margin: auto;
+}
+
+.hom:hover {
+    color: #b67373;
+    background-color:black;
+}
+.pat {
+    fill: white;
 }
