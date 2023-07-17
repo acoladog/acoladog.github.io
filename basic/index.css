@@ -105,9 +105,9 @@ tz.eir:hover {
     font-size: 4vw;
     padding: 1vw;
     font-weight: bolder;
-    text-shadow: 0.1em 0.1em 0.2em #fff;
-    -webkit-text-stroke: 1px #a9756c;
-    -webkit-text-fill-color: #fec9c9;
+    text-shadow: 0.1em 0.1em 0.2em #8a4c4c;
+    -webkit-text-stroke: 1px #692d2d;
+    -webkit-text-fill-color: #f9bab0;
 }
 .bw {
     color: rgb(255, 162, 0);
