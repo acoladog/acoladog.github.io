@@ -41,16 +41,18 @@
         <script>
             var cvs=document.querySelector("#cvs");
             var ctx=cvs.getContext("2d");
-            var sht=5,peo=[],ttl,ttl1,peo2=[1,3,5],br=100,br1=10;
+            var sht=5,peo=[],ttl=0,ttl1=0,peo2=[1,3,5],br=100,br1=10,ck=1,slp=0;
             document.onkeydown=(e)=>{
-                if(e.key=='g'){
-                    test(0);
-                }
-                else if(e.key=='h'){
-                    test(1);
-                }
-                else if(e.key=='j'){
-                    test(2);
+                if(ck==1){
+                    if(e.key=='g'){
+                        test(0);
+                    }
+                    else if(e.key=='h'){
+                        test(1);
+                    }
+                    else if(e.key=='j'){
+                        test(2);
+                    }
                 }
             };
             function test(bt){
@@ -59,24 +61,38 @@
                 if(peo[0]==1&&bt==0){
                     peo.splice(0, 1);
                     peo.push(peo2[Math.floor(Math.random()*3)]);
+                    ttl1++;
                 }
                 else if(peo[0]==3&&bt==1){
                     peo.splice(0, 1);
                     peo.push(peo2[Math.floor(Math.random()*3)]);
+                    ttl1++;
                 }
                 else if(peo[0]==5&&bt==2){
                     peo.splice(0, 1);
                     peo.push(peo2[Math.floor(Math.random()*3)]);
+                    ttl1++;
                 }
                 else err();
                 shtm();
             }
             function err(){
-                ctx.beginPath();
-                ctx.arc(((cvs.width-4*br)/6+br/2)*peo[0]+br/2,((cvs.height*0.65-sht*br1)/sht+br1)*(sht-0)-cvs.height*0.04+cvs.height*0.08,cvs.height*0.6/sht/2,0,Math.PI*2);
-                ctx.fillStyle="black";
-                ctx.fill();
-                ctx.closePath()
+                ck=0;
+                let a=peo[0];
+                delete peo[0];
+                bk();
+                draw();
+                shtm();
+                slp=100;
+                for(let i=0;i<=((ttl1/50)+1)*25;i++) dw(i,a);
+                for(let i=((ttl1/50)+1)*25;i>=0;i--) dw(i,a);
+                window.setTimeout(function() {
+                    peo[0]=a;
+                    bk();
+                    draw();
+                    shtm();
+                }, slp+1);
+                setTimeout(() => ck=1, slp+50)
             }
             function per(){
                 peo=[];
@@ -88,7 +104,7 @@
                 for(let i=0;i<sht;i++){
                     ctx.beginPath();
                     ctx.arc(((cvs.width-4*br)/6+br/2)*peo[i]+br/2,((cvs.height*0.65-sht*br1)/sht+br1)*(sht-i)-cvs.height*0.04+cvs.height*0.08,cvs.height*0.6/sht/2,0,Math.PI*2);
-                    ctx.fillStyle="red";
+                    ctx.fillStyle="#c85656";
                     ctx.fill();
                     ctx.closePath()
                 }
@@ -101,6 +117,11 @@
                 ctx.restore();
             }
             function draw(){
+                ctx.fillStyle="black";
+                ctx.fillRect(0,0,cvs.width,cvs.height*0.1);
+                ctx.closePath();
+                ctx.closePath();
+                //------------------------------------------------------
                 let gdt=ctx.createLinearGradient(0,0,cvs.width,cvs.height);
                 gdt.addColorStop(1,"#f00");
                 gdt.addColorStop(0,"#f0f");
@@ -127,7 +148,21 @@
                     ctx.fillStyle = "red";
                     ctx.fillText("Shoot!",((cvs.width-4*br)/6+br/2)*i+br/2,cvs.height*0.87);
                 }
-                ctx.closePath();
+            }
+            function dw(i,a){
+                window.setTimeout(function() {
+                    bk();
+                    draw();
+                    shtm();
+                    ctx.beginPath();
+                    ctx.arc(((cvs.width-4*br)/6+br/2)*a+br/2,((cvs.height*0.65-sht*br1)/sht+br1)*(sht-0)-cvs.height*0.04+cvs.height*0.08-i*cvs.height*0.0018,cvs.height*0.6/sht/2,0,Math.PI*2);
+                    ctx.fillStyle="#c85656";
+                    ctx.fill();
+                    ctx.arc(((cvs.width-4*br)/6+br/2)*a+br/2,((cvs.height*0.65-sht*br1)/sht+br1)*(sht-0)-cvs.height*0.04+cvs.height*0.08-i*cvs.height*0.0018,cvs.height*0.6/sht/2,0,Math.PI*2);
+                    ctx.strokeStyle="black";
+                    ctx.stroke()
+                    ctx.closePath()
+                }, slp);
             }
             bk();
             draw();
