@@ -38,7 +38,7 @@
 var cvs=document.querySelector("#cvs");
 var ctx=cvs.getContext("2d");
 var sht=5,peo=[],ttl=0,ttl1=0,
-    br=100,br1=10,h=0,vy,aa,cy,by,tm=30,int,
+    br=100,br1=10,h=0,vy,aa,cy,by,tm=0,int,time=1,
     ck=1,keys=[],line=3,fps=120,last_time,
 pd={
     3:['g','h','j'],
@@ -134,13 +134,13 @@ function draw(){
     ctx.fillStyle="black";
     ctx.fillRect(0,0,cvs.width,cvs.height*0.1);
     //------------------------------------------------------
+    ctx.save();
     ctx.shadowColor = "#FFF";
     ctx.shadowBlur = 15;
     ctx.strokeStyle="#666";
     ctx.lineWidth=10;
     ctx.strokeRect(cvs.width*0.015,cvs.height*0.01,cvs.width*0.25,cvs.height*0.08);
-    ctx.shadowColor = "#000";
-    ctx.shadowBlur = 0;
+    ctx.restore();
     ctx.fillStyle = "#AAA";
     ctx.font = `${cvs.width*0.125}px arial`;
     ctx.fillText(tm,cvs.width*0.14,cvs.height*0.078);
@@ -165,7 +165,7 @@ function draw(){
 }
 function drop(){
     int=setInterval(()=>{
-        tm=Math.ceil(30-(Date.now()-last_time)/1000);
+        tm=Math.ceil(time-(Date.now()-last_time)/1000);
         bk();
         draw();
         if(tm<=0) go();
@@ -208,8 +208,22 @@ function drop(){
 }
 function go(){
     clearInterval(int);
-    ctx.fillStyle="#898989";
-    ctx.fillRect(cvs.width*0.1,cvs.height*0.1,cvs.width,cvs.height);
+    setTimeout(function(){
+        ctx.save();
+        ctx.shadowColor = "#111";
+        ctx.shadowBlur = 200;
+        ctx.fillStyle = "#CCC";
+        ctx.font = `${cvs.height*0.24}px arial`;
+        ctx.textAlign = "center";
+        ctx.fillText("Game",cvs.width/2,(cvs.height/2)*0.9);
+        ctx.fillText("Over",cvs.width/2,(cvs.height/2)*1.4);
+        ctx.restore();
+    },500);
+    setTimeout(function(){
+        ctx.fillStyle="#898989";
+        ctx.fillRect(0,0,cvs.width,cvs.height);
+    },3000);
+    
 }
 function pau(){
     ctx.fillStyle="";
