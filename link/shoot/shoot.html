@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <style>
@@ -37,32 +38,33 @@
         <script>
 var cvs=document.querySelector("#cvs");
 var ctx=cvs.getContext("2d");
+cvs.style.height=`${innerHeight*(outerWidth/innerWidth)*0.95}px`;
 var sht=5,peo=[],ttl=0,ttl1=0,
     br=100,br1=10,h=0,vy,aa,cy,by,tm,int,time=30,
     ck=1,keys=[],line=3,fps=120,last_time,sta=0,pau=1,
+    ti=cvs.width/cvs.offsetWidth,
 pd={
     3:['g','h','j'],
     4:['f','g','h','j'],
     5:['d','f','gh','j','k'],
     6:['d','f','g','h','j','k']
-},
-mouse={
-    x:0,
-    y:0,
 };
-cvs.style.height=`${innerHeight*(outerWidth/innerWidth)*0.95}px`;
-window.addEventListener('click',(event) => {
-  mouse.x = event.pageX;
-  mouse.y = event.pageY;
-  click();
+cvs.addEventListener('click',(e) => {
+    let pd2=new Path2D(),x=e.offsetX*ti,y=e.offsetY*ti;
+    ctx.fillStyle="red";
+    ctx.beginPath();
+    ctx.arc(x,y,10,0,Math.PI*2);
+    ctx.fill();
+    //click();
 });
 document.onkeydown=(e)=>{
-    if(e.key=="p"&&sta==1&&ck) pause();
-    else if(e.key=="s"&&sta==0&&ck) start();
-    else if(e.key=="h"&&sta==0&&ck) home();
+    let a=e.key;
+    a=a.toLocaleLowerCase();
+    if(a=="s"&&sta==0&&ck) start();
+    else if(a=="h"&&sta==0&&ck) home();
     else if(ck&&sta==1){
         for(let i=0;i<line;i++){
-            if(pd[line][i].includes(e.key)){
+            if(pd[line][i].includes(a)){
                 keys.push(i);
             }
         }
@@ -109,56 +111,55 @@ function bk(){
 }
 function draw(){
     if(sta){
-        
-    for(let i=1;i<=line;i++){
-        ctx.fillStyle="#555";
-        ctx.beginPath();
-        ctx.arc(((cvs.width-(line+1)*br)/(line*2)+br/2)*(i*2-1)+br/2,
-                cvs.height*0.85,
-                cvs.height*0.1*3/line,
-                0,Math.PI*2);
-        ctx.fill();
-    }
-    for(let i=1;i<=line;i++){
-        ctx.fillStyle = "#ff0";
-        ctx.font = `${175*3/line}px arial`;
-        ctx.textAlign = "center";
-        ctx.fillText("Shoot!",((cvs.width-(line+1)*br)/(line*2)+br/2)*(i*2-1)+br/2,cvs.height*0.87-4*line);
-    }
-    for(let i=1;i<=line;i++){
-        ctx.fillStyle = "#0ff";
-        ctx.font = `${120*3/line}px arial`;
-        ctx.textAlign = "center";
-        ctx.fillText(pd[line][i-1],((cvs.width-(line+1)*br)/(line*2)+br/2)*(i*2-1)+br/2,cvs.height*0.87-4*line+175*3/line);
-    }
-    //------------------------------------------------------
-    for(let i=0;i<sht;i++){//shtm
-        ctx.beginPath();
-        ctx.arc(((cvs.width-(line+1)*br)/(line*2)+br/2)*(peo[i]*2+1)+br/2,
-                ((cvs.height*0.65-sht*br1)/sht+br1)*(sht-i)-cvs.height*0.04+cvs.height*0.08-h,
-                cvs.height*0.6/Math.max(sht,line)/2,
-                0,Math.PI*2);
-        ctx.fillStyle="#c85656";
-        ctx.fill();
-    }
-    //------------------------------------------------------
-    ctx.fillStyle="black";
-    ctx.fillRect(0,0,cvs.width,cvs.height*0.1);
-    //------------------------------------------------------
-    ctx.save();
-    ctx.shadowColor = "#FFF";
-    ctx.shadowBlur = 15;
-    ctx.strokeStyle="#666";
-    ctx.lineWidth=10;
-    ctx.strokeRect(cvs.width*0.015,cvs.height*0.01,cvs.width*0.25,cvs.height*0.08);
-    ctx.restore();
-    ctx.fillStyle = "#AAA";
-    ctx.font = `${cvs.width*0.125}px arial`;
-    ctx.fillText(tm,cvs.width*0.14,cvs.height*0.078);
-    //------------------------------------------------------
-    ctx.fillStyle = "#CCC";
-    ctx.font = `${cvs.width*0.125}px arial`;
-    ctx.fillText(ttl1,cvs.width*0.5,cvs.height*0.078);
+        for(let i=1;i<=line;i++){
+            ctx.fillStyle="#555";
+            ctx.beginPath();
+            ctx.arc(((cvs.width-(line+1)*br)/(line*2)+br/2)*(i*2-1)+br/2,
+                    cvs.height*0.85,
+                    cvs.height*0.1*3/line,
+                    0,Math.PI*2);
+            ctx.fill();
+        }
+        for(let i=1;i<=line;i++){
+            ctx.fillStyle = "#ff0";
+            ctx.font = `${175*3/line}px arial`;
+            ctx.textAlign = "center";
+            ctx.fillText("Shoot!",((cvs.width-(line+1)*br)/(line*2)+br/2)*(i*2-1)+br/2,cvs.height*0.87-4*line);
+        }
+        for(let i=1;i<=line;i++){
+            ctx.fillStyle = "#0ff";
+            ctx.font = `${120*3/line}px arial`;
+            ctx.textAlign = "center";
+            ctx.fillText(pd[line][i-1],((cvs.width-(line+1)*br)/(line*2)+br/2)*(i*2-1)+br/2,cvs.height*0.87-4*line+175*3/line);
+        }
+        //------------------------------------------------------
+        for(let i=0;i<sht;i++){//shtm
+            ctx.beginPath();
+            ctx.arc(((cvs.width-(line+1)*br)/(line*2)+br/2)*(peo[i]*2+1)+br/2,
+                    ((cvs.height*0.65-sht*br1)/sht+br1)*(sht-i)-cvs.height*0.04+cvs.height*0.08-h,
+                    cvs.height*0.6/Math.max(sht,line)/2,
+                    0,Math.PI*2);
+            ctx.fillStyle="#c85656";
+            ctx.fill();
+        }
+        //------------------------------------------------------
+        ctx.fillStyle="black";
+        ctx.fillRect(0,0,cvs.width,cvs.height*0.1);
+        //------------------------------------------------------
+        ctx.save();
+        ctx.shadowColor = "#FFF";
+        ctx.shadowBlur = 15;
+        ctx.strokeStyle="#666";
+        ctx.lineWidth=10;
+        ctx.strokeRect(cvs.width*0.015,cvs.height*0.01,cvs.width*0.25,cvs.height*0.08);
+        ctx.restore();
+        ctx.fillStyle = "#AAA";
+        ctx.font = `${cvs.width*0.125}px arial`;
+        ctx.fillText(tm,cvs.width*0.14,cvs.height*0.078);
+        //------------------------------------------------------
+        ctx.fillStyle = "#CCC";
+        ctx.font = `${cvs.width*0.125}px arial`;
+        ctx.fillText(ttl1,cvs.width*0.5,cvs.height*0.078);
     }
     let gdt=ctx.createLinearGradient(0,0,cvs.width,cvs.height);
     gdt.addColorStop(1,"#f00");
@@ -232,7 +233,6 @@ function go(){
         ctx.restore();
     },500);
     setTimeout(function(){
-        sta=0;
         ctx.fillStyle="#898989";
         ctx.fillRect(0,0,cvs.width,cvs.height);
         ctx.fillStyle = "#444";
@@ -252,18 +252,9 @@ function go(){
         ctx.font = `${cvs.height*0.1}px arial`;
         ctx.fillText("home!",cvs.width/2,cvs.height*0.7);
     },3000);
-    
-}
-function pause(){
-    if(pau==1){
-        clearInterval(int);
-        bk();
-        ctx.fillStyle="";
-        ctx.fillRect(cvs.width,cvs.height,cvs.width,cvs.height);
-    }
-    else{
-
-    }
+    setTimeout(function() {
+        sta=0;
+    },4000);
 }
 function click(){
     if(mouse.x>=68&&mouse.x<=433&&mouse.y>=350&&mouse.y<=281)
