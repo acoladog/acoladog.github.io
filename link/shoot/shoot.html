@@ -51,12 +51,13 @@ pd={
 };
 cvs.addEventListener('click',(e) => {
     let x=e.offsetX*ti,y=e.offsetY*ti;
-    ctx.beginPath();
     if(sta==0&&ck){
+        ctx.beginPath();
         ctx.rect(cvs.width*0.1,cvs.height*0.41,cvs.width*0.8,cvs.height*0.1);
         if (ctx.isPointInPath(x,y)) {
             start();
         }
+        ctx.beginPath();
         ctx.rect(cvs.width*0.1,cvs.height*0.61,cvs.width*0.8,cvs.height*0.1);
         if(ctx.isPointInPath(x,y)&&h==0) {
             home();
