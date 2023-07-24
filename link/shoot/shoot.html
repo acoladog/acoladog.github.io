@@ -40,7 +40,7 @@ var cvs=document.querySelector("#cvs");
 var ctx=cvs.getContext("2d");
 cvs.style.height=`${innerHeight*(outerWidth/innerWidth)*0.95}px`;
 var sht=5,peo=[],ttl=0,ttl1=0,
-    br=100,br1=10,h=0,vy,aa,cy,by,tm,int,time=30,
+    br=100,br1=10,h=0,vy,aa,cy,by,tm,int,time=30,h=1,cheat=0;
     ck=1,keys=[],line=3,fps=120,last_time,sta=0,pau=1,
     ti=cvs.width/cvs.offsetWidth,
 pd={
@@ -50,12 +50,18 @@ pd={
     6:['d','f','g','h','j','k']
 };
 cvs.addEventListener('click',(e) => {
-    let pd2=new Path2D(),x=e.offsetX*ti,y=e.offsetY*ti;
-    ctx.fillStyle="red";
+    let x=e.offsetX*ti,y=e.offsetY*ti;
     ctx.beginPath();
-    ctx.arc(x,y,10,0,Math.PI*2);
-    ctx.fill();
-    //click();
+    if(sta==0&&ck){
+        ctx.rect(cvs.width*0.1,cvs.height*0.41,cvs.width*0.8,cvs.height*0.1);
+        if (ctx.isPointInPath(x,y)) {
+            start();
+        }
+        ctx.rect(cvs.width*0.1,cvs.height*0.61,cvs.width*0.8,cvs.height*0.1);
+        if(ctx.isPointInPath(x,y)&&h==0) {
+            home();
+        }
+    }
 });
 document.onkeydown=(e)=>{
     let a=e.key;
@@ -63,10 +69,13 @@ document.onkeydown=(e)=>{
     if(a=="s"&&sta==0&&ck) start();
     else if(a=="h"&&sta==0&&ck) home();
     else if(ck&&sta==1){
-        for(let i=0;i<line;i++){
-            if(pd[line][i].includes(a)){
-                keys.push(i);
-            }
+        if(a=="y"&&cheat) keys.push(peo[0]);
+        else{
+            for(let i=0;i<line;i++){
+                if(pd[line][i].includes(a)){
+                    keys.push(i);
+                }
+            } 
         }
     }
 };
@@ -219,6 +228,7 @@ function drop(){
     },1/fps*1000);
 }
 function go(){
+    h=0;
     clearInterval(int);
     ck=1;
     setTimeout(function(){
@@ -262,6 +272,7 @@ function click(){
 }
 function start(){
     ck=0;
+    keys=[];
     bk();
     draw();
     ctx.fillStyle = "#888";
@@ -295,6 +306,7 @@ function start(){
     },3500);
 }
 function home(){
+    h=1;
     bk();
     draw();
     ctx.fillStyle = "#BBB";
@@ -309,6 +321,7 @@ function home(){
     ctx.fillStyle = "#a52a2a";
     ctx.font = `${cvs.height*0.1}px arial`;
     ctx.fillText("by coladog",cvs.width/2,cvs.height*0.9);
+    ctx.closePath();
 }
 function ttlm(){
     let tt=ttl1,ttm=100;
