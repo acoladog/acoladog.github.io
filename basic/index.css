@@ -12,6 +12,7 @@ font-family: "Comic Sans MS", 標楷體;
 }
 .logo{
     display:flex;
+    user-select:none;
 }
 body{
     background-color: brown;
@@ -88,6 +89,7 @@ tz {
     box-shadow:7px 1px 5px #471212;
     z-index:2;
     border-radius:10px;
+    user-select:none;
 }
 #wfe{
     background: transparent;
@@ -123,6 +125,7 @@ a.bu{
     text-decoration:none;
     display:flex;
     margin-bottom:15px;
+    user-select:none;
 }
 a.bu:hover{
     background-color: #8e4e4e;
