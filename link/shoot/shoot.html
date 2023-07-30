@@ -36,11 +36,12 @@
             <canvas id="cvs" width="2000" height="3000"></canvas>
         </div>
         <script>
+var img = new Image();
 var cvs=document.querySelector("#cvs");
 var ctx=cvs.getContext("2d");
 cvs.style.height=`${innerHeight*(outerWidth/innerWidth)*0.95}px`;
 var sht=5,peo=[],ttl=0,ttl1=0,
-    br=100,br1=10,h=0,vy,aa,cy,by,tm,int,time=30,h=1,cheat=0,
+    br=100,br1=10,h=0,vy,aa,cy,by,tm,int,time=30,h=1,cheat=1,
     ck=1,keys=[],line=3,fps=120,last_time,sta=0,pau=1,
     ti=cvs.width/cvs.offsetWidth,
 pd={
@@ -63,6 +64,19 @@ cvs.addEventListener('click',(e) => {
             home();
         }
     }
+    if(sta&&ck){
+        for(let i=1;i<=line;i++){
+            ctx.beginPath();
+            ctx.arc(((cvs.width-(line+1)*br)/(line*2)+br/2)*(i*2-1)+br/2,
+                    cvs.height*0.85,
+                    cvs.height*0.1*3/line,
+                    0,Math.PI*2);
+            if (ctx.isPointInPath(x,y)) {
+                keys.push(i-1);
+                break;
+            }
+        }
+    }
 });
 document.onkeydown=(e)=>{
     let a=e.key;
@@ -70,7 +84,7 @@ document.onkeydown=(e)=>{
     if(a=="s"&&sta==0&&ck) start();
     else if(a=="h"&&sta==0&&ck) home();
     else if(ck&&sta==1){
-        if(a=="y"&&cheat) keys.push(peo[0]);
+        if(a=="y"&&cheat) keys.push(-1);
         else{
             for(let i=0;i<line;i++){
                 if(pd[line][i].includes(a)){
@@ -81,6 +95,14 @@ document.onkeydown=(e)=>{
     }
 };
 function test(bt){
+    if(bt==-1){
+        peo.splice(0, 1);
+        peo.push(Math.floor(Math.random()*line));
+        ttl1++;
+        keys.splice(0,1);
+        h+=cvs.height*0.6/Math.max(sht,line);
+        return;
+    }
     let a=1;
     for(let i=0;i<line;i++){
         if(peo[0]==i&&bt==i){
@@ -88,10 +110,11 @@ function test(bt){
             peo.push(Math.floor(Math.random()*line));
             ttl1++;
             a=0;
+            break;
         }
     }
     keys.splice(0,1);
-    if(a) err();
+    if(a)err();
     else h+=cvs.height*0.6/Math.max(sht,line);
 }
 function err(){
@@ -144,6 +167,7 @@ function draw(){
         }
         //------------------------------------------------------
         for(let i=0;i<sht;i++){//shtm
+            /*
             ctx.beginPath();
             ctx.arc(((cvs.width-(line+1)*br)/(line*2)+br/2)*(peo[i]*2+1)+br/2,
                     ((cvs.height*0.65-sht*br1)/sht+br1)*(sht-i)-cvs.height*0.04+cvs.height*0.08-h,
@@ -151,6 +175,20 @@ function draw(){
                     0,Math.PI*2);
             ctx.fillStyle="#c85656";
             ctx.fill();
+            */
+            ctx.save();
+            /*
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = -5;
+            ctx.shadowColor = '#000';
+            ctx.shadowBlur = 50;
+            */
+            ctx.drawImage(img,
+                ((cvs.width-(line+1)*br)/(line*2)+br/2)*(peo[i]*2+1)+br/2-cvs.height*0.6/Math.max(sht,line)/2,
+                ((cvs.height*0.65-sht*br1)/sht+br1)*(sht-i)-cvs.height*0.04+cvs.height*0.08-h-cvs.height*0.6/Math.max(sht,line)/2,
+                cvs.height*0.6/Math.max(sht,line),
+                cvs.height*0.6/Math.max(sht,line));
+            ctx.restore();
         }
         //------------------------------------------------------
         ctx.fillStyle="black";
@@ -198,6 +236,9 @@ function drop(){
         if(h>cvs.height*0.6/Math.max(sht,line)/2){
             h-=cvs.height*0.6/Math.max(sht,line)/fps*6;
         }
+        if(h>cvs.height){
+            h=cvs.height;
+        }
         if(ck){
             if(keys.length>0){
                 test(keys[0]);
@@ -212,6 +253,7 @@ function drop(){
             }
             bk();
             draw();
+            /*
             ctx.beginPath();
             ctx.arc(((cvs.width-(line+1)*br)/(line*2)+br/2)*(aa*2+1)+br/2,
                     cy,
@@ -223,6 +265,18 @@ function drop(){
             ctx.fill();
             ctx.shadowColor = "#0000";
             ctx.shadowBlur = 0;
+            */
+            ctx.save();
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = -5;
+            ctx.shadowColor = '#000';
+            ctx.shadowBlur = 50;
+            ctx.drawImage(img,
+                ((cvs.width-(line+1)*br)/(line*2)+br/2)*(aa*2+1)+br/2-cvs.height*0.6/Math.max(sht,line)/2,
+                cy-cvs.height*0.6/Math.max(sht,line)/2,
+                cvs.height*0.6/Math.max(sht,line),
+                cvs.height*0.6/Math.max(sht,line));
+            ctx.restore();
             cy+=vy/fps;
             vy+=ay/fps;
         }
@@ -337,8 +391,11 @@ function ttlm(){
     }
     return ttl;
 }
-tm=0;
-home();
+img.src = "1.png";
+    img.addEventListener('load',function(){
+    tm=0;
+    home();
+});
         </script>
     </body>
 </html>
