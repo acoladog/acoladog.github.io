@@ -11,3 +11,9 @@ wfe.onclick=()=>{
     }
     te^=1;
 };
+document.body.onclick=()=>{
+    if(te){
+        wqe.style.transform="translate3d(-150%, 0, 0)";
+    }
+    te^=1;
+};
