@@ -5,10 +5,11 @@ wqe.style.transform="translate3d(-150%, 0, 0)";
 document.body.onclick=()=>{
     if(te){
         wqe.style.transform="translate3d(-150%, 0, 0)";
+        te=0;
     }
-    te^=1;
 };
-wfe.onclick=()=>{
+wfe.onclick=(e)=>{
+    e.stopPropagation();
     if(te){
         wqe.style.transform="translate3d(-150%, 0, 0)";
     }
