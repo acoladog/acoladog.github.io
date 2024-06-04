@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本分析工具</title>
+    <style>
+        body {
+            font-family: 標楷體;
+            margin: 20px;
+            background-color: #333333;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        textarea {
+            font-family: 標楷體;
+            width: 50%;
+            height: 300px;
+            background-color: #333333;
+            color: white;
+            margin-top: 20px;
+            font-size: 15px;
+            border: 2px solid;
+            border-radius: 10px;
+        }
+        .results {
+            margin-top: 20px;
+            text-align: center;
+        }
+        ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            background-color: #333333;
+        }
+        ::-webkit-scrollbar-thumb {
+            cursor: default;
+            background-color: #a1a1a1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #888888;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        a{
+            text-align: center;
+            width: 200px;
+            color: #eee;
+            text-decoration: none;
+            border: 1px #fff solid;
+            border-radius: 10px;
+            background: #303030;
+            padding: 10px;
+            margin: 30px;
+            white-space:nowrap;
+        }
+        a:hover {
+            background: #888;
+        }
+    </style>
+    <script>
+        function analyzeText() {
+            const text = document.getElementById('inputText').value;
+            const totalCount = text.length;
+            let lineCount;
+            if (text.length) {
+                lineCount = text.split(/\n/).length;
+            }
+            else {
+                lineCount = 0;
+            }
+            const chineseChars = text.match(/[\u4e00-\u9fa5]/g) || [];
+            const chineseCharCount = chineseChars.length;
+            const chinesePunctuation = text.match(/[\u3000-\u303F\uFF00-\uFFEF]/g) || [];
+            const chinesePuncCount = chinesePunctuation.length;
+            const englishChars = text.match(/[a-zA-Z]/g) || [];
+            const englishCharCount = englishChars.length;
+            const englishPunctuation = text.match(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g) || [];
+            const englishPuncCount = englishPunctuation.length;
+            const englishWords = text.match(/\b[a-zA-Z]+\b/g) || [];
+            const englishWordCount = englishWords.length;
+            const byteCount = new Blob([text]).size;
+            document.getElementById('totalCount').innerText = totalCount;
+            document.getElementById('lineCount').innerText = lineCount;
+            document.getElementById('chineseCharCount').innerText = chineseCharCount;
+            document.getElementById('chinesePuncCount').innerText = chinesePuncCount;
+            document.getElementById('englishCharCount').innerText = englishCharCount;
+            document.getElementById('englishPuncCount').innerText = englishPuncCount;
+            document.getElementById('englishWordCount').innerText = englishWordCount;
+            document.getElementById('byteCount').innerText = byteCount;
+        }
+        function clearText() {
+            document.getElementById('inputText').focus();
+            document.getElementById('inputText').value = "";
+            analyzeText(); // Clear the results
+        }
+        function trimLineEndSpaces() {
+            document.getElementById('inputText').focus();
+            const textArea = document.getElementById('inputText');
+            const text = textArea.value.split('\n').map(line => line.trimEnd()).join('\n');
+            textArea.value = text;
+            analyzeText();
+        }
+        function formatParagraphs() {
+            document.getElementById('inputText').focus();
+            if (document.getElementById('inputText').value.length) {
+                const textArea = document.getElementById('inputText');
+                const paragraphs = textArea.value.split(/\n+/); // 修改正则表达式，匹配一个或多个连续换行符
+                const formattedText = paragraphs.map(paragraph => {
+                    // Remove leading spaces from each paragraph
+                    const trimmedParagraph = paragraph.trim().replace(/\n\s+/g, '\n');
+                    // Add a single space at the beginning of each paragraph
+                    return '    ' + trimmedParagraph;
+                }).join('\n\n'); // Join the paragraphs back
+                textArea.value = formattedText;
+                analyzeText();
+            }
+        }
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('inputText').addEventListener('input', analyzeText);
+        });
+    </script>
+</head>
+<body>
+    <h1>文本分析工具</h1>
+    <textarea id="inputText" placeholder="請在此處輸入文本"></textarea>
+    <div class="results">
+        <a type="button" onclick="clearText()">清空全部</a>
+        <a type="button" onclick="trimLineEndSpaces()">清除行尾空格</a>
+        <a type="button" onclick="formatParagraphs()">段落整理</a>
+        <p>總數：<span id="totalCount">0</span></p>
+        <p>行列（段落）數：<span id="lineCount">0</span></p>
+        <p>中文字數：<span id="chineseCharCount">0</span> | 中文標點符號數：<span id="chinesePuncCount">0</span></p>
+        <p>英文字數：<span id="englishCharCount">0</span> | 英文標點符號數：<span id="englishPuncCount">0</span></p>
+        <p>英文單詞數：<span id="englishWordCount">0</span> | 字節單詞數：<span id="byteCount">0</span></p>
+    </div>
+</body>
+</html>
