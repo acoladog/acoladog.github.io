@@ -117,7 +117,7 @@
                     const trimmedParagraph = paragraph.trim().replace(/\n\s+/g, '\n');
                     // Add a single space at the beginning of each paragraph
                     return '    ' + trimmedParagraph;
-                }).join('\n\n'); // Join the paragraphs back
+                }).join('\n'); // Join the paragraphs back
                 textArea.value = formattedText;
                 analyzeText();
             }
