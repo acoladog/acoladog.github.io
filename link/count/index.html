@@ -116,7 +116,7 @@
                     // Remove leading spaces from each paragraph
                     const trimmedParagraph = paragraph.trim().replace(/\n\s+/g, '\n');
                     // Add a single space at the beginning of each paragraph
-                    return '        ' + trimmedParagraph;
+                    return '    ' + trimmedParagraph;
                 }).join('\n\n'); // Join the paragraphs back
                 textArea.value = formattedText;
                 analyzeText();
