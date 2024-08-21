@@ -32,7 +32,7 @@ body{
     border-radius: 10px;
     display: flex;
     flex-direction: row;
-    align-content: center;
+    align-items: center;
 }
 tz {
     cursor: pointer;
@@ -92,6 +92,7 @@ tz {
     user-select:none;
 }
 #wfe{
+    pointer-events:bounding-box;
     background: transparent;
     border: none;
 }
@@ -141,7 +142,7 @@ a.bu:hover{
     flex-direction: row;
 }
 
-.hom:hover {
+.hom:hover , #wfe:hover .pat{
     color: #b67373;
 }
 .pat {
