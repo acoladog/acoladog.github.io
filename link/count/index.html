@@ -111,12 +111,17 @@
             document.getElementById('inputText').focus();
             if (document.getElementById('inputText').value.length) {
                 const textArea = document.getElementById('inputText');
-                const paragraphs = textArea.value.split(/\n+/); // 修改正则表达式，匹配一个或多个连续换行符
+                const paragraphs = textArea.value.split(/\n+/); // Modify the regex to match one or more consecutive newlines
                 const formattedText = paragraphs.map(paragraph => {
                     // Remove leading spaces from each paragraph
                     const trimmedParagraph = paragraph.trim().replace(/\n\s+/g, '\n');
                     // Add a single space at the beginning of each paragraph
-                    return '    ' + trimmedParagraph;
+                    let paragraphWithChinesePunctuation = '    ' + trimmedParagraph;
+                    
+                    // Replace ? with ？ and ! with ！
+                    paragraphWithChinesePunctuation = paragraphWithChinesePunctuation.replace(/\?/g, '？').replace(/!/g, '！').replace(/:/g, '：');
+                    
+                    return paragraphWithChinesePunctuation;
                 }).join('\n'); // Join the paragraphs back
                 textArea.value = formattedText;
                 analyzeText();

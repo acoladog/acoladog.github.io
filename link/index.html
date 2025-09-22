@@ -1,41 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="../basic/notcpu.js" type="text/javascript"></script>
-	<script src="../basic/hom.js" type="text/javascript"></script>
-	<title>link</title>
+	<title>Link</title>
 	<link href="../basic/index.css" rel="stylesheet" type="text/css">
-	<link href="./index.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <div class="wqe">
-    </div>
-    <div class="topnav">
-		<button id="wfe">
-	    		<svg viewBox="0 0 24 24" width="50">
-				<path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" class="pat">
-				</path>
-			</svg>
-	        </button>
-		<a class="hom" onclick="hom()">coladog</a>
-	</div>
-	<div class="Header"><img class="logo" src="../basic/logo.png"></div>
-	<div class="inter">
-		<script>
-			var a=[ 
-					["./biology/biology.html","化學元素"],
-					["./shoot/shoot.html","打殭屍"],
-					["./count/index.html","數字數"],
-					["./ascii art/index.html","ascii art"]
-			];
-            for(let i=0;i<a.length;i++){
-                document.write(`<a href=${a[i][0]} target='_blank' class="bu">${a[i][1]}</a> `);
-            }
-        </script>
-	</div>
-    <script src="../basic/wq.js"></script>
-    <script src="../basic/tz.js"></script>
-
-
+		<div class="inter">
+			<script>
+				var a=[ 
+						["./biology/biology.html","化學元素"],
+						["./shoot/shoot.html","打殭屍"],
+						["./count/index.html","數字數"]
+				];
+				for(let i=0;i<a.length;i++){
+					document.write(`<a href=${a[i][0]} target='_blank' class="bu">${a[i][1]}</a> `);
+				}
+			</script>
+			<a href="../" class="bu" target="_self">Back to the last page</a>
+		</div>
 </body>
 </html>
