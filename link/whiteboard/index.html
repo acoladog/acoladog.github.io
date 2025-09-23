@@ -632,10 +632,8 @@
 
     // 清除按鈕 - 只清除當前頁面
     clearBtn.addEventListener("click", () => {
-        if (confirm("確定要清除當前頁面嗎？")) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pageData[currentPage] = '';
-        }
+            pageData[currentPage] = ''
     });
 
     // 頁面控制
