@@ -1,23 +1,819 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Link</title>
-	<link href="../basic/index.css" rel="stylesheet" type="text/css">
+	<style>
+	     body {
+	       background-color: antiquewhite;
+	       margin: 0;
+	       padding: 0;
+	       overflow-x: auto;
+	       overflow-y: auto;
+	     }
+	     body::-webkit-scrollbar {
+	       display: none;
+	     }
+
+	     /* 白板容器 */
+	     .whiteboard-container {
+	       position: relative;
+	       width: 94%;
+	       margin: auto;
+	       padding: 30px 0;
+	     }
+
+	     #whiteboard {
+	       background-color: white;
+	       display: block;
+	       width: 100%;
+	       cursor: crosshair;
+	       border: 1px solid #ccc;
+	       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	       touch-action: none; /* 防止預設觸控行為 */
+	     }
+
+	     /* 側欄 */
+        #sidebar {
+          position: fixed;
+          top: 50px;
+          left: 4%;
+          width: 60px;
+          background: rgba(255, 209, 191, 0.8);
+          color: white;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          padding: 10px;
+          border-radius: 10px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+          z-index: 1000;
+        }
+
+	     #sidebar button {
+	       background: white;
+	       border: none;
+	       padding: 8px;
+	       border-radius: 6px;
+	       cursor: pointer;
+	       transition: background 0.2s;
+	     }
+
+	     #sidebar button:hover {
+	       background: lightgray;
+	     }
+
+	     #sidebar button.active {
+	       background: #ffd1bf;
+	     }
+
+       .hidden{
+        display: none !important;
+       }
+
+       /* 筆刷設置面板 */
+       #brush-settings {
+        position: fixed;
+        top: 20px;
+        left: 12%;
+        background: rgb(255 201 201 / 95%);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        min-width: 280px;
+        border: 1px solid #ccc;
+      }
+
+      #brush-settings label {
+        display: block;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      #brush-settings input[type="color"] {
+        width: 50px;
+        height: 30px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: 10px;
+      }
+
+      .size-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 5px;
+      }
+
+      #brush-settings input[type="range"] {
+        flex: 1;
+        cursor: pointer;
+      }
+
+      .size-display {
+        font-weight: bold;
+        color: #666;
+        min-width: 40px;
+      }
+
+      .size-preview {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+      }
+
+      .size-circle {
+        background-color: #333;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+      }
+
+      /* 工具設定分組 */
+      .tool-section {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 12px;
+        margin-bottom: 10px;
+        background: #ffb0b0;
+      }
+
+      .tool-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .tool-section h3 {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        color: #555;
+        font-weight: 600;
+      }
+
+      /* 頁面控制面板 */
+      #page-controls {
+        position: fixed;
+        top: 88%;
+        right: 2%;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 1001;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid #ccc;
+      }
+
+      #page-controls button {
+        background: #f0f0f0;
+        border: 1px solid #ccc;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      #page-controls button:hover {
+        background: #e0e0e0;
+      }
+
+      #page-controls button:disabled {
+        background: #f8f8f8;
+        color: #ccc;
+        cursor: not-allowed;
+      }
+
+      #page-info {
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+        min-width: 80px;
+        text-align: center;
+      }
+
+      /* 橡皮擦游標指示 */
+      #eraser-cursor {
+        position: fixed;
+        border: 2px solid #666;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        pointer-events: none;
+        z-index: 1002;
+        display: none;
+      }
+
+      /* 手掌模式指示器 */
+      #palm-indicator {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 165, 0, 0.9);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 1003;
+        display: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+	</style>
+	<title>Canvas白板 - 支援手掌橡皮擦</title>
 </head>
 <body>
-		<div class="inter">
-			<script>
-				var a=[ 
-						["./biology/biology.html","化學元素"],
-						["./shoot/shoot.html","打殭屍"],
-						["./count/index.html","數字數"],
-						["./whiteboard/index.html","白板"]
-				];
-				for(let i=0;i<a.length;i++){
-					document.write(`<a href=${a[i][0]} target='_blank' class="bu">${a[i][1]}</a> `);
-				}
-			</script>
-			<a href="../" class="bu" target="_self">Back to the last page</a>
+  <!-- 筆刷設置面板 -->
+  <div id="brush-settings" class="hidden">
+    <!-- 筆刷設定 -->
+    <div id="brush-section" class="tool-section">
+      <h3>筆刷設定</h3>
+      <label>
+        顏色: <input type="color" id="brush-color" value="#000000">
+      </label>
+      <label>
+        筆刷粗細: <span class="size-display" id="brush-size-display">5px</span>
+        <div class="size-control">
+          <input type="range" id="brush-size" min="1" max="50" value="10">
+          <div class="size-preview">
+            <div class="size-circle" id="brush-size-circle"></div>
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <!-- 橡皮擦設定 -->
+    <div id="eraser-section" class="tool-section">
+      <h3>橡皮擦設定</h3>
+      <label>
+        橡皮擦粗細: <span class="size-display" id="eraser-size-display">15px</span>
+        <div class="size-control">
+          <input type="range" id="eraser-size" min="5" max="300" value="50">
+          <div class="size-preview">
+            <div class="size-circle" id="eraser-size-circle"></div>
+          </div>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <!-- 橡皮擦游標指示 -->
+  <div id="eraser-cursor"></div>
+
+  <!-- 手掌模式指示器 -->
+  <div id="palm-indicator">🖐️ 手掌橡皮擦模式</div>
+
+  <!-- 頁面控制面板 -->
+  <div id="page-controls">
+    <button id="prev-page">◀</button>
+    <span id="page-info">第 1 頁</span>
+    <button id="next-page">▶</button>
+  </div>
+
+	<div class="whiteboard-container">
+		<canvas id="whiteboard"></canvas>
+		<!-- 側欄 -->
+		<div id="sidebar" class="hidden">
+			<!-- 筆刷 -->
+			<button id="brush-btn" title="筆刷">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" fill="currentColor"/>
+        </svg>
+      </button>
+      
+      <!-- 橡皮擦 -->
+      <button id="eraser-btn" title="橡皮擦">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 15L15 5L21 11L11 21H5V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M13 7L19 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 12V18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M14 18H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <!-- 清除畫面 -->
+      <button id="clear-btn" title="清除當前頁面">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z" fill="currentColor"/>
+        </svg>
+      </button>
 		</div>
+	</div>
+  
+  <script>
+    const canvas = document.getElementById("whiteboard");
+    const sidebar = document.getElementById("sidebar");
+    const ctx = canvas.getContext("2d");
+    const brushBtn = document.getElementById("brush-btn");
+    const eraserBtn = document.getElementById("eraser-btn");
+    const clearBtn = document.getElementById("clear-btn");
+    const brushSettings = document.getElementById("brush-settings");
+    const brushSection = document.getElementById("brush-section");
+    const eraserSection = document.getElementById("eraser-section");
+    const brushColorInput = document.getElementById("brush-color");
+    const brushSizeInput = document.getElementById("brush-size");
+    const eraserSizeInput = document.getElementById("eraser-size");
+    const brushSizeDisplay = document.getElementById("brush-size-display");
+    const eraserSizeDisplay = document.getElementById("eraser-size-display");
+    const brushSizeCircle = document.getElementById("brush-size-circle");
+    const eraserSizeCircle = document.getElementById("eraser-size-circle");
+    const pageControls = document.getElementById("page-controls");
+    const prevPageBtn = document.getElementById("prev-page");
+    const nextPageBtn = document.getElementById("next-page");
+    const pageInfo = document.getElementById("page-info");
+    const eraserCursor = document.getElementById("eraser-cursor");
+    const palmIndicator = document.getElementById("palm-indicator");
+
+    let drawing = false;
+    let currentTool = "none"; // "brush", "eraser", "none"
+    let originalTool = "brush"; // 記錄手掌觸控前的原始工具
+    let brushColor = "#000000";
+    let brushSize = 5;
+    let eraserSize = 15;
+    let currentPage = 1;
+    let totalPages = 1;
+    let pageData = {}; // 儲存每頁的畫布數據
+    let lastPoint = null; // 上一個繪畫點，用於更細密的筆觸
+    let isPalmMode = false; // 是否為手掌模式
+    let palmModeTimeout = null; // 手掌模式超時
+
+    // 更新尺寸預覽圓圈
+    function updateSizePreview() {
+      // 更新筆刷預覽
+      const brushPreviewSize = Math.min(Math.max(brushSize, 2), 30);
+      brushSizeCircle.style.width = brushPreviewSize + 'px';
+      brushSizeCircle.style.height = brushPreviewSize + 'px';
+      brushSizeCircle.style.backgroundColor = brushColor;
+      brushSizeDisplay.textContent = brushSize + 'px';
+      
+      // 更新橡皮擦預覽
+      const eraserPreviewSize = Math.min(Math.max(eraserSize / 2, 5), 30);
+      eraserSizeCircle.style.width = eraserPreviewSize + 'px';
+      eraserSizeCircle.style.height = eraserPreviewSize + 'px';
+      eraserSizeCircle.style.backgroundColor = '#ccc';
+      eraserSizeDisplay.textContent = eraserSize + 'px';
+    }
+
+    // 顯示對應工具的設定區塊
+    function showToolSettings(tool) {
+      if (tool === "brush") {
+        brushSection.style.display = "block";
+        eraserSection.style.display = "none";
+      } else if (tool === "eraser") {
+        brushSection.style.display = "none";
+        eraserSection.style.display = "block";
+      } else {
+        brushSection.style.display = "block";
+        eraserSection.style.display = "block";
+      }
+    }
+
+    // 設置canvas尺寸（有底邊界）
+    function setupCanvas() {
+      const container = canvas.parentElement;
+      const containerWidth = container.clientWidth;
+      const containerHeight = Math.max(window.innerHeight - 100, 600); // 有底邊界
+      
+      // 設置canvas的實際尺寸
+      canvas.width = containerWidth;
+      canvas.height = containerHeight;
+      
+      // 設置canvas的顯示尺寸（CSS）
+      canvas.style.width = containerWidth + 'px';
+      canvas.style.height = containerHeight + 'px';
+      
+      // 設置繪圖上下文的初始狀態
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      // 啟用抗鋸齒，讓線條更平滑
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+    }
+
+    // 初始化canvas
+    setupCanvas();
+    
+    // 初始化第一頁數據
+    saveCurrentPageData();
+
+    // 窗口大小改變時重新設置canvas
+    window.addEventListener('resize', () => {
+      saveCurrentPageData(); // 保存當前頁面
+      setupCanvas();
+      loadCurrentPageData(); // 重新載入當前頁面
+    });
+
+    // 獲取準確的滑鼠座標
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left) * (canvas.width / rect.width),
+        y: (e.clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    // 獲取觸控點座標
+    function getTouchPos(touch) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+        y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    // 計算兩點間距離
+    function distance(point1, point2) {
+      return Math.sqrt(
+        Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2)
+      );
+    }
+
+    // 細密繪畫 - 在兩點間插入中間點
+    function drawSmoothLine(from, to) {
+      const dist = distance(from, to);
+      const steps = Math.max(1, Math.floor(dist / 2)); // 每2像素一個點
+      
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = from.x + (to.x - from.x) * t;
+        const y = from.y + (to.y - from.y) * t;
+        
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      }
+    }
+
+    // 保存當前頁面數據
+    function saveCurrentPageData() {
+      pageData[currentPage] = canvas.toDataURL();
+    }
+
+    // 載入頁面數據
+    function loadCurrentPageData() {
+      const img = new Image();
+      img.onload = function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = pageData[currentPage] || '';
+      
+      if (!pageData[currentPage]) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    // 更新頁面顯示
+    function updatePageDisplay() {
+      pageInfo.textContent = `第 ${currentPage} 頁`;
+      prevPageBtn.disabled = currentPage <= 1;
+      nextPageBtn.disabled = false;
+    }
+
+    // 檢測手掌觸控（基於觸控區域大小）
+    function isPalmTouch(touch) {
+      // 檢查觸控區域半徑，手掌通常有較大的接觸面積
+      const radiusX = touch.radiusX || 0;
+      const radiusY = touch.radiusY || 0;
+      const avgRadius = (radiusX + radiusY) / 2;
+      
+      // 如果觸控區域半徑大於15像素，認為是手掌
+      return avgRadius > 15;
+    }
+
+    // 啟用手掌模式
+    function enablePalmMode() {
+      if (!isPalmMode) {
+        originalTool = currentTool;
+        isPalmMode = true;
+        selectTool("eraser");
+        palmIndicator.style.display = "block";
+      }
+      
+      // 清除之前的超時
+      if (palmModeTimeout) {
+        clearTimeout(palmModeTimeout);
+      }
+    }
+
+    // 停用手掌模式
+    function disablePalmMode() {
+      if (isPalmMode) {
+        isPalmMode = false;
+        selectTool(originalTool);
+        palmIndicator.style.display = "none";
+      }
+      
+      if (palmModeTimeout) {
+        clearTimeout(palmModeTimeout);
+        palmModeTimeout = null;
+      }
+    }
+
+    // 延遲停用手掌模式
+    function scheduleDisablePalmMode() {
+      if (palmModeTimeout) {
+        clearTimeout(palmModeTimeout);
+      }
+      
+      // 500ms後停用手掌模式
+      palmModeTimeout = setTimeout(() => {
+        disablePalmMode();
+      }, 500);
+    }
+
+    // 關閉所有側欄
+    function closeAllSidebars() {
+      sidebar.classList.add("hidden");
+      brushSettings.classList.add("hidden");
+    }
+
+    // 側欄切換邏輯（修改為點擊canvas外的區域）
+    document.body.addEventListener("click", function(e) {
+        // 如果點擊的是canvas，關閉所有側欄
+        if (e.target === canvas) {
+            closeAllSidebars();
+            return;
+        }
+        
+        // 如果點擊的不是側欄或設定面板內的元素 
+        if (!sidebar.contains(e.target) && !brushSettings.contains(e.target) && !pageControls.contains(e.target) && e.target !== canvas) {
+            const clickLeft = e.clientX < window.innerWidth / 2;
+            const sidebarOnLeft = sidebar.style.left !== "auto" && sidebar.style.left !== "";
+
+            if ((clickLeft && sidebarOnLeft) || (!clickLeft && !sidebarOnLeft)) {
+                sidebar.classList.toggle("hidden");
+                if (sidebar.classList.contains("hidden")) {
+                    brushSettings.classList.add("hidden");
+                }
+            } else {
+                if (clickLeft) {
+                    sidebar.style.left = "4%";
+                    sidebar.style.right = "auto";
+                    brushSettings.style.left = "12%";
+                    brushSettings.style.right = "auto";
+                } else {
+                    sidebar.style.right = "4%";
+                    sidebar.style.left = "auto";
+                    brushSettings.style.right = "12%";
+                    brushSettings.style.left = "auto";
+                }
+                sidebar.classList.remove("hidden");
+            }
+        }
+    });
+
+    // 工具選擇邏輯
+    function selectTool(tool) {
+      // 移除所有按鈕的active狀態
+      document.querySelectorAll('#sidebar button').forEach(btn => btn.classList.remove('active'));
+      
+      currentTool = tool;
+      
+      if (tool === "brush") {
+        brushBtn.classList.add('active');
+        canvas.style.cursor = "crosshair";
+        eraserCursor.style.display = "none";
+      } else if (tool === "eraser") {
+        eraserBtn.classList.add('active');
+        canvas.style.cursor = "none";
+        eraserCursor.style.display = "block";
+        updateEraserCursor();
+      } else {
+        canvas.style.cursor = "default";
+        eraserCursor.style.display = "none";
+      }
+      updateSizePreview();
+    }
+
+    // 更新橡皮擦游標
+    function updateEraserCursor() {
+      if (currentTool === "eraser") {
+        eraserCursor.style.width = eraserSize + 'px';
+        eraserCursor.style.height = eraserSize + 'px';
+      }
+    }
+
+    // 筆刷按鈕
+    brushBtn.addEventListener("click", () => {
+        if (currentTool !== "brush") {
+            selectTool("brush");
+            brushSettings.classList.add("hidden"); // 切換工具時隱藏設定面板
+        } else {
+            brushSettings.classList.toggle("hidden");
+            if (!brushSettings.classList.contains("hidden")) {
+                showToolSettings("brush");
+            }
+        }
+    });
+
+    // 橡皮擦按鈕
+    eraserBtn.addEventListener("click", () => {
+        if (currentTool !== "eraser") {
+            selectTool("eraser");
+            brushSettings.classList.add("hidden"); // 切換工具時隱藏設定面板
+        } else {
+            brushSettings.classList.toggle("hidden");
+            if (!brushSettings.classList.contains("hidden")) {
+                showToolSettings("eraser");
+            }
+        }
+    });
+
+    // 清除按鈕 - 只清除當前頁面
+    clearBtn.addEventListener("click", () => {
+        if (confirm("確定要清除當前頁面嗎？")) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pageData[currentPage] = '';
+        }
+    });
+
+    // 頁面控制
+    prevPageBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+            saveCurrentPageData();
+            currentPage--;
+            loadCurrentPageData();
+            updatePageDisplay();
+        }
+    });
+
+    nextPageBtn.addEventListener("click", () => {
+        saveCurrentPageData();
+        currentPage++;
+        if (currentPage > totalPages) {
+            totalPages = currentPage;
+        }
+        loadCurrentPageData();
+        updatePageDisplay();
+    });
+
+    // 更新筆刷設置
+    brushColorInput.addEventListener("input", (e) => {
+        brushColor = e.target.value;
+        updateSizePreview();
+    });
+    
+    brushSizeInput.addEventListener("input", (e) => {
+        brushSize = parseInt(e.target.value);
+        updateSizePreview();
+    });
+
+    eraserSizeInput.addEventListener("input", (e) => {
+        eraserSize = parseInt(e.target.value);
+        updateSizePreview();
+        updateEraserCursor();
+    });
+
+    // 滑鼠繪圖事件
+    canvas.addEventListener("mousedown", (e) => {
+        if (currentTool === "none") return;
+        
+        drawing = true;
+        const pos = getMousePos(e);
+        lastPoint = pos;
+        
+        if (currentTool === "brush") {
+            ctx.globalCompositeOperation = "source-over";
+            ctx.strokeStyle = brushColor;
+            ctx.fillStyle = brushColor;
+            ctx.lineWidth = brushSize;
+        } else if (currentTool === "eraser") {
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.lineWidth = eraserSize;
+        }
+        
+        // 畫一個點（處理單點點擊）
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, ctx.lineWidth / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+        // 更新橡皮擦游標位置
+        if (currentTool === "eraser") {
+            const rect = canvas.getBoundingClientRect();
+            eraserCursor.style.left = (e.clientX - eraserSize / 2) + 'px';
+            eraserCursor.style.top = (e.clientY - eraserSize / 2) + 'px';
+        }
+        
+        if (!drawing || currentTool === "none") return;
+        
+        const pos = getMousePos(e);
+        
+        if (lastPoint) {
+            // 使用細密繪畫方法
+            drawSmoothLine(lastPoint, pos);
+        }
+        
+        lastPoint = pos;
+    });
+
+    canvas.addEventListener("mouseup", () => {
+        if (drawing) {
+            drawing = false;
+            lastPoint = null;
+            ctx.closePath();
+        }
+    });
+
+    canvas.addEventListener("mouseenter", (e) => {
+        if (currentTool === "eraser") {
+            eraserCursor.style.display = "block";
+        }
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+        if (currentTool === "eraser") {
+            eraserCursor.style.display = "none";
+        }
+        
+        if (drawing) {
+            drawing = false;
+            lastPoint = null;
+            ctx.closePath();
+        }
+    });
+
+    // 觸控設備支援
+    canvas.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        
+        // 檢查是否有多個觸控點或大面積觸控（手掌）
+        if (e.touches.length > 1) {
+            // 多點觸控，啟用手掌模式
+            enablePalmMode();
+            return;
+        }
+        
+        const touch = e.touches[0];
+        
+        // 檢查是否為手掌觸控
+        if (isPalmTouch(touch)) {
+            enablePalmMode();
+        }
+        
+        if (currentTool === "none") return;
+        
+        const mouseEvent = new MouseEvent("mousedown", {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    canvas.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        
+        if (!drawing || currentTool === "none") return;
+        
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent("mousemove", {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    canvas.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        
+        // 如果沒有更多觸控點，安排停用手掌模式
+        if (e.touches.length === 0) {
+            scheduleDisablePalmMode();
+        }
+        
+        const mouseEvent = new MouseEvent("mouseup", {});
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    // 監聽觸控取消事件
+    canvas.addEventListener("touchcancel", (e) => {
+        e.preventDefault();
+        scheduleDisablePalmMode();
+        
+        const mouseEvent = new MouseEvent("mouseup", {});
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    // 初始化頁面顯示
+    updatePageDisplay();
+    
+    // 預設選擇筆刷工具
+    selectTool("brush");
+    updateSizePreview();
+  </script>
 </body>
 </html>
