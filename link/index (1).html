@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Link</title>
+	<link href="../basic/index.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+		<div class="inter">
+			<script>
+				var a=[ 
+						["./biology/biology.html","化學元素"],
+						["./shoot/shoot.html","打殭屍"],
+						["./count/index.html","數字數"]
+				];
+				for(let i=0;i<a.length;i++){
+					document.write(`<a href=${a[i][0]} target='_blank' class="bu">${a[i][1]}</a> `);
+				}
+			</script>
+			<a href="../" class="bu" target="_self">Back to the last page</a>
+		</div>
+</body>
+</html>
