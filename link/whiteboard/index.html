@@ -426,7 +426,7 @@
       const dist = distance(from, to);
       
       // 加入距離檢查，如果距離太大就不畫線（可能是座標跳躍）
-      if (dist < 0.1 || dist > 100) return; // 限制最大距離為100像素
+      if (dist < 0.1 || dist > 30) return; // 限制最大距離為30像素
       
       // 根據壓力和設定計算畫筆寬度
       const brushWidth = (currentTool === "brush" ? brushSize : getCurrentEraserSize()) * pressure;
