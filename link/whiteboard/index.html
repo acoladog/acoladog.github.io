@@ -113,10 +113,10 @@
         opacity: 0; transition: opacity 0.5s; z-index: 2000;
       }
 	</style>
-	<title>Canvas白板 - 四角縮放版</title>
+	<title>Canvas白板 - 完整功能版</title>
 </head>
 <body>
-  <div id="toast-msg">提示：按 Ctrl+V 貼上圖片 | 拖曳四角縮放</div>
+  <div id="toast-msg">提示：按 Ctrl+V 貼上圖片 | 按 Delete 刪除圖片</div>
 
   <div id="brush-settings" class="hidden">
     <div id="brush-section" class="tool-section">
@@ -217,7 +217,6 @@
     let isRotatingImg = false;
     let dragStartX, dragStartY;
     let resizeDir = ""; // "nw", "ne", "sw", "se"
-    // 紀錄變形前的狀態，用於計算
     let initialImgState = { x:0, y:0, w:0, h:0, angle:0 };
 
     class WhiteboardImage {
@@ -250,18 +249,17 @@
                 context.fillStyle = "white";
                 context.strokeStyle = "#00a8ff";
                 
-                // 畫四個角的控制點
                 const handleSize = 10;
-                // NW (左上)
+                // NW
                 context.fillRect(-this.width/2 - handleSize/2, -this.height/2 - handleSize/2, handleSize, handleSize);
                 context.strokeRect(-this.width/2 - handleSize/2, -this.height/2 - handleSize/2, handleSize, handleSize);
-                // NE (右上)
+                // NE
                 context.fillRect(this.width/2 - handleSize/2, -this.height/2 - handleSize/2, handleSize, handleSize);
                 context.strokeRect(this.width/2 - handleSize/2, -this.height/2 - handleSize/2, handleSize, handleSize);
-                // SW (左下)
+                // SW
                 context.fillRect(-this.width/2 - handleSize/2, this.height/2 - handleSize/2, handleSize, handleSize);
                 context.strokeRect(-this.width/2 - handleSize/2, this.height/2 - handleSize/2, handleSize, handleSize);
-                // SE (右下)
+                // SE
                 context.fillRect(this.width/2 - handleSize/2, this.height/2 - handleSize/2, handleSize, handleSize);
                 context.strokeRect(this.width/2 - handleSize/2, this.height/2 - handleSize/2, handleSize, handleSize);
 
@@ -278,7 +276,6 @@
             context.restore();
         }
 
-        // 轉換全域座標到圖片局部座標 (未旋轉的矩形空間)
         toLocal(px, py) {
             const cx = this.x + this.width / 2;
             const cy = this.y + this.height / 2;
@@ -286,7 +283,6 @@
             const dy = py - cy;
             const cos = Math.cos(-this.angle);
             const sin = Math.sin(-this.angle);
-            // 旋轉回正
             const rx = dx * cos - dy * sin;
             const ry = dx * sin + dy * cos;
             return { x: rx, y: ry };
@@ -297,20 +293,14 @@
             return p.x >= -this.width/2 && p.x <= this.width/2 && p.y >= -this.height/2 && p.y <= this.height/2;
         }
 
-        // 檢查控制點
         checkControlPoints(px, py) {
             const p = this.toLocal(px, py);
-            const h = 15; // 點擊感應半徑
-
-            // 旋轉點
+            const h = 15; 
             if (Math.sqrt(Math.pow(p.x, 2) + Math.pow(p.y - (-this.height/2 - 25), 2)) < 15) return "rotate";
-
-            // 四角控制點
             if (Math.abs(p.x - (-this.width/2)) < h && Math.abs(p.y - (-this.height/2)) < h) return "nw";
             if (Math.abs(p.x - (this.width/2)) < h && Math.abs(p.y - (-this.height/2)) < h) return "ne";
             if (Math.abs(p.x - (-this.width/2)) < h && Math.abs(p.y - (this.height/2)) < h) return "sw";
             if (Math.abs(p.x - (this.width/2)) < h && Math.abs(p.y - (this.height/2)) < h) return "se";
-            
             return null;
         }
     }
@@ -335,11 +325,25 @@
         images.forEach(img => img.draw(ctx));
     }
 
-    function showToast(msg) {
-        toastMsg.textContent = msg; toastMsg.style.opacity = 1;
-        setTimeout(() => { toastMsg.style.opacity = 0; }, 3000);
-    }
+    // 在「狀態變數」區域新增一個變數來追蹤定時器
+    let toastTimer = null; 
 
+    function showToast(msg) {
+        // 1. 如果目前已經有定時器在跑，先清除它
+        if (toastTimer) {
+            clearTimeout(toastTimer);
+        }
+
+        // 2. 更新文字並顯示
+        toastMsg.textContent = msg; 
+        toastMsg.style.opacity = 1;
+
+        // 3. 設定新的定時器，並記錄下來
+        toastTimer = setTimeout(() => { 
+            toastMsg.style.opacity = 0; 
+            toastTimer = null; // 結束後清空
+        }, 1500);
+    }
     setupCanvas();
     saveCurrentPageData();
     window.addEventListener('resize', () => {
@@ -425,7 +429,6 @@
                 else { 
                     isResizingImg = true; 
                     resizeDir = action; 
-                    // 記錄開始縮放時的圖片狀態
                     initialImgState = { 
                         x: selectedImage.x, 
                         y: selectedImage.y, 
@@ -468,63 +471,38 @@
             renderAll();
         } 
         else if (isResizingImg && selectedImage) {
-            // 四角縮放數學邏輯
-            // 1. 將滑鼠當前位置轉換到「未旋轉」的相對座標系中
-            // 我們以圖片原本的中心點為參考
             const dx = pos.x - initialImgState.cx;
             const dy = pos.y - initialImgState.cy;
-            
-            // 逆旋轉矩陣，找出滑鼠相對於圖片中心(未旋轉時)的偏移
             const cos = Math.cos(-initialImgState.angle);
             const sin = Math.sin(-initialImgState.angle);
             const rx = dx * cos - dy * sin;
             const ry = dx * sin + dy * cos;
 
-            // 原始邊界 (相對於中心)
             const oldHalfW = initialImgState.w / 2;
             const oldHalfH = initialImgState.h / 2;
+            let newLeft = -oldHalfW, newRight = oldHalfW, newTop = -oldHalfH, newBottom = oldHalfH;
 
-            // 根據拖曳的角落，計算新的邊界 (left, top, right, bottom)
-            // 這裡是相對於原始中心的 Local 座標
-            let newLeft = -oldHalfW;
-            let newRight = oldHalfW;
-            let newTop = -oldHalfH;
-            let newBottom = oldHalfH;
-
-            // 自由縮放 (不鎖定比例)
             if (resizeDir === "nw") { newLeft = rx; newTop = ry; }
             else if (resizeDir === "ne") { newRight = rx; newTop = ry; }
             else if (resizeDir === "sw") { newLeft = rx; newBottom = ry; }
             else if (resizeDir === "se") { newRight = rx; newBottom = ry; }
             
-            // 防止縮太小翻轉
             if(newRight - newLeft < 10) { if(resizeDir.includes('w')) newLeft = newRight - 10; else newRight = newLeft + 10; }
             if(newBottom - newTop < 10) { if(resizeDir.includes('n')) newTop = newBottom - 10; else newBottom = newTop + 10; }
 
-            // 計算新的寬高
             const newW = newRight - newLeft;
             const newH = newBottom - newTop;
-
-            // 計算新的中心點偏移 (在 Local 座標系中)
             const newCenterOffX = (newLeft + newRight) / 2;
             const newCenterOffY = (newTop + newBottom) / 2;
-
-            // 將新的中心點偏移轉回 Global 座標系 (順旋轉)
             const rotCos = Math.cos(initialImgState.angle);
             const rotSin = Math.sin(initialImgState.angle);
             const globalOffX = newCenterOffX * rotCos - newCenterOffY * rotSin;
             const globalOffY = newCenterOffX * rotSin + newCenterOffY * rotCos;
 
-            // 更新圖片屬性
             selectedImage.width = newW;
             selectedImage.height = newH;
-            // 新的 Global 中心位置 = 舊中心 + 旋轉後的偏移
-            const newCx = initialImgState.cx + globalOffX;
-            const newCy = initialImgState.cy + globalOffY;
-            
-            // 最後轉回左上角座標
-            selectedImage.x = newCx - newW / 2;
-            selectedImage.y = newCy - newH / 2;
+            selectedImage.x = (initialImgState.cx + globalOffX) - newW / 2;
+            selectedImage.y = (initialImgState.cy + globalOffY) - newH / 2;
 
             renderAll();
         }
@@ -547,15 +525,12 @@
         isDraggingImg = false; isResizingImg = false; isRotatingImg = false;
     });
 
-    // 觸控支援 (簡化版：只支援單指操作)
+    // 觸控支援
     canvas.addEventListener("touchstart", (e) => {
         e.preventDefault(); const t = e.touches[0]; const pos = getTouchPos(t);
-        // 手掌偵測
         for(let i=0; i<e.touches.length; i++) if(isPalmTouch(e.touches[i])) enablePalmMode(e.touches[i]);
         if(!isPalmMode) {
-             // 優先檢查選取圖片
             let hit = false;
-             // 檢查控制點 (僅簡單支援，手指較難精確點擊)
             if (selectedImage) {
                 const action = selectedImage.checkControlPoints(pos.x, pos.y);
                 if(action) {
@@ -567,7 +542,6 @@
                      return;
                 }
             }
-
             for(let i=images.length-1; i>=0; i--) {
                 if(images[i].contains(pos.x, pos.y)) {
                     selectedImage = images[i]; images.splice(i, 1); images.push(selectedImage);
@@ -584,11 +558,9 @@
 
     canvas.addEventListener("touchmove", (e) => {
         e.preventDefault(); const t = e.touches[0]; const pos = getTouchPos(t);
-        // 復用滑鼠移動邏輯
         if (isDraggingImg && selectedImage) {
             selectedImage.x = pos.x - dragStartX; selectedImage.y = pos.y - dragStartY; renderAll();
         } else if (isResizingImg && selectedImage) {
-             // 複製上面的數學邏輯
             const dx = pos.x - initialImgState.cx; const dy = pos.y - initialImgState.cy;
             const cos = Math.cos(-initialImgState.angle); const sin = Math.sin(-initialImgState.angle);
             const rx = dx * cos - dy * sin; const ry = dx * sin + dy * cos;
@@ -647,6 +619,20 @@
         }
     });
 
+    // --- 鍵盤刪除功能 ---
+    window.addEventListener("keydown", (e) => {
+        if (selectedImage && (e.key === "Delete" || e.key === "Backspace")) {
+            const index = images.indexOf(selectedImage);
+            if (index > -1) {
+                images.splice(index, 1); // 刪除圖片
+                selectedImage = null;    // 清空選取狀態
+                renderAll();             // 重繪
+                saveCurrentPageData();   // 存檔
+                showToast("圖片已刪除");
+            }
+        }
+    });
+
     // --- UI 綁定 ---
     function selectTool(tool) {
       document.querySelectorAll('#sidebar button').forEach(b => b.classList.remove('active'));
@@ -679,7 +665,48 @@
             else { sidebarOnLeft = isLeft; sidebar.style.left=isLeft?"4%":"auto"; sidebar.style.right=isLeft?"auto":"4%"; brushSettings.style.left=isLeft?"12%":"auto"; brushSettings.style.right=isLeft?"auto":"12%"; sidebar.classList.remove("hidden"); }
         }
     };
+    // --- 換頁功能邏輯 ---
+    function updatePageUI() {
+        pageInfo.innerText = `第 ${currentPage} 頁`;
+        prevPageBtn.disabled = (currentPage === 1);
+        // 如果想要限制總頁數，可以在這裡處理 nextPageBtn 的狀態
+    }
 
+    nextPageBtn.onclick = () => {
+        // 1. 儲存當前頁面資料
+        saveCurrentPageData();
+        
+        // 2. 判斷是否需要增加總頁數
+        if (currentPage === totalPages) {
+            totalPages++;
+        }
+        
+        // 3. 切換到下一頁
+        currentPage++;
+        
+        // 4. 讀取新頁面資料並更新介面
+        loadCurrentPageData();
+        updatePageUI();
+        showToast(`已切換至第 ${currentPage} 頁`);
+    };
+
+    prevPageBtn.onclick = () => {
+        if (currentPage > 1) {
+            // 1. 儲存當前頁面資料
+            saveCurrentPageData();
+            
+            // 2. 切換到上一頁
+            currentPage--;
+            
+            // 3. 讀取資料並更新介面
+            loadCurrentPageData();
+            updatePageUI();
+            showToast(`已切換至第 ${currentPage} 頁`);
+        }
+    };
+
+    // 初始化 UI 狀態
+    updatePageUI();
     updateSizePreview(); selectTool("brush");
   </script>
 </body>
