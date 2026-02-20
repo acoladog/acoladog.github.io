@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My HackMyVM Journey | Writeups</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-color: #c9d1d9;
+            --accent-color: #238636; /* 駭客綠 */
+            --border-color: #30363d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .machine-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .machine-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+        }
+
+        .tag {
+            display: inline-block;
+            background: #21262d;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-right: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        .difficulty-easy { color: #7ee787; }
+        .difficulty-medium { color: #d29922; }
+
+        a { color: var(--accent-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        code {
+            background: #000;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+    <body>
+        <header>
+            <h1>HackMyVM Writeups</h1>
+            <p>紀錄我的滲透測試學習歷程</p>
+        </header>
+
+        <div class="container">
+            <section class="stats">
+                <div><strong>已完成:</strong> 0 台</div>
+                <div><strong>最新進度:</strong> Venus</div>
+            </section>
+
+            <section id="writeups">
+            </section>
+        </div>
+        <section id="writeups-container"></section>
+        <script>
+            const container = document.getElementById('writeups-container');
+            function createCard(machine) {
+                const diffClass = `difficulty-${machine.difficulty.toLowerCase()}`;
+                const tagsHtml = machine.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+                return `
+                    <article class="machine-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <h2>${machine.id}. ${machine.name}</h2>
+                            <small style="color: #8b949e;">${machine.date}</small>
+                        </div>
+                        <p>
+                            <span class="tag ${diffClass}">${machine.difficulty}</span>
+                            ${tagsHtml}
+                        </p>
+                        <p>${machine.description}</p>
+                        <a href="${machine.link}">閱讀完整 Writeup →</a>
+                    </article>
+                `;
+            }
+            async function loadMachines() {
+                try {
+                    const response = await fetch('./context.json');
+                    if (!response.ok) throw new Error('無法讀取 JSON 檔案');
+                    const machines = await response.json();
+                    container.innerHTML = machines.map(m => createCard(m)).join('');
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    container.innerHTML = `<p style="color: #f85149;">載入資料失敗：${error.message}</p>`;
+                }
+            }
+            loadMachines();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writeup Editor - Final Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-color: #1f1f1f;
+            --card-bg: #16152d;
+            --text-color: #e0defb;
+            --accent-color: #766DF8;
+            --accent-hover: #5a52d6;
+            --border-color: #231c6c;
+            --code-bg: #1e1e2e;
+            --modal-bg: #1a1935;
+            --danger-color: #ff5f56;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 100px 0 60px 0;
+        }
+
+        #toolbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(18, 17, 34, 0.95); backdrop-filter: blur(8px);
+            padding: 15px; border-bottom: 2px solid var(--accent-color);
+            z-index: 10000; display: flex; gap: 8px; justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6); user-select: none;
+            align-items: center;
+        }
+
+        #toc-container {
+            position: fixed; top: 110px; left: 20px;
+            width: 220px; background: var(--card-bg);
+            border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 15px; max-height: 75vh; overflow-y: auto; z-index: 900;
+        }
+        #toc-container h4 { margin: 0 0 10px 0; color: var(--accent-color); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        #toc-list { list-style: none; padding: 0; margin: 0; font-size: 14px; }
+        #toc-list li { margin-bottom: 8px; }
+        #toc-list .toc-h3 { padding-left: 15px; font-size: 12px; opacity: 0.8; }
+        #toc-list a { color: var(--text-color); text-decoration: none; display: block; }
+        #toc-list a:hover { color: var(--accent-color); padding-left: 5px; }
+
+        .main-content-wrapper {
+            max-width: 800px;
+            margin: 0 auto 0 270px;
+            padding: 0 30px;
+        }
+
+        button { background: #252347; color: white; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        button:hover { background: var(--accent-color); }
+
+        .hl-btn { width: 24px; height: 24px; padding: 0; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); }
+
+        h2 { border-left: 5px solid var(--accent-color); padding-left: 15px; margin-top: 40px; color: white; scroll-margin-top: 120px; }
+        h3 { color: var(--accent-color); margin-top: 30px; scroll-margin-top: 120px; }
+        #content a { color: var(--accent-color); text-decoration: underline; }
+        
+        [contenteditable="true"]:focus { outline: none !important; }
+        code:focus { outline: none !important; }
+
+        .code-container { 
+            line-height: 1.5; position: relative; margin: 25px 0; 
+            background: var(--code-bg); border-radius: 8px; border: 1px solid var(--border-color); overflow: visible;
+        }
+        .lang-badge { position: absolute; top: 0; left: 0; background: var(--border-color); color: var(--accent-color); font-size: 10px; padding: 2px 10px; cursor: pointer; z-index: 10; font-weight: bold; text-transform: uppercase; }
+        
+        .del-code-btn { position: absolute; top: 8px; right: 45px; width: 20px; height: 20px; background: var(--danger-color); color: white; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 15; font-size: 12px; border:none; }
+        body.editing .del-code-btn { display: flex; }
+        
+        .del-pop { display: none; position: absolute; top: -35px; right: 40px; background: #2a2a4a; border: 1px solid var(--accent-color); padding: 5px; border-radius: 4px; gap: 5px; z-index: 100; align-items: center; }
+        .del-pop button { padding: 2px 8px; font-size: 11px; }
+
+        .copy-btn { position: absolute; top: 10px; right: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; z-index: 5; cursor: pointer; }
+
+        pre[class*="language-"] { margin: 0 !important; padding: 2.5em 1.5em 1.5em !important; font-size: 14px; background: transparent !important; white-space: pre-wrap; word-wrap: break-word; }
+
+        #custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 20000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--modal-bg); padding: 25px; border-radius: 12px; border: 1px solid var(--accent-color); width: 320px; }
+        .modal-content input { width: 100%; padding: 10px; margin: 10px 0; background: #0f0e22; border: 1px solid var(--border-color); color: white; border-radius: 4px; box-sizing: border-box; }
+
+        .inserted-img { max-width: 100%; border-radius: 10px; margin: 20px 0; border: 2px solid var(--border-color); cursor: pointer; }
+
+        @media (max-width: 1100px) { #toc-container { display: none; } .main-content-wrapper { margin: 0 auto; } }
+    </style>
+</head>
+<body class="editing" spellcheck="false">
+
+<div id="toolbar">
+    <button onmousedown="handleAction(event, () => exec('bold'))">B</button>
+    <button onmousedown="handleAction(event, () => exec('italic'))">I</button>
+    <button onmousedown="handleAction(event, () => exec('strikeThrough'))">S</button>
+    
+    <div style="display:flex; gap:4px; margin: 0 8px; padding: 0 8px; border-left: 1px solid #444; border-right: 1px solid #444;">
+        <button class="hl-btn" style="background: rgba(107, 107, 107, 0.6);" onmousedown="handleAction(event, () => exec('hiliteColor', 'rgba(107, 107, 107, 0.6)'))"></button>
+        <button class="hl-btn" style="background: rgba(255, 235, 59, 0.4);" onmousedown="handleAction(event, () => exec('hiliteColor', 'rgba(255, 235, 59, 0.4)'))"></button>
+        <button class="hl-btn" style="background: rgba(255, 95, 86, 0.5);" onmousedown="handleAction(event, () => exec('hiliteColor', 'rgba(255, 95, 86, 0.5)'))"></button>
+        <button class="hl-btn" style="background: transparent; color: #ccc; font-size: 10px;" onmousedown="handleAction(event, () => exec('removeFormat'))">X</button>
+    </div>
+
+    <button onmousedown="handleAction(event, openLinkModal)" style="color: #a29bfe;">Link</button>
+    <button onmousedown="handleAction(event, () => insertNode('h2', '大標題'))">H2</button>
+    <button onmousedown="handleAction(event, () => insertNode('h3', '小標題'))">H3</button>
+    <button onmousedown="handleAction(event, insertCode)">+ Code</button>
+    <button onmousedown="handleAction(event, triggerImageUpload)">+ Image</button>
+    <button onclick="refreshHighlight()" style="background: var(--accent-color);">高亮預覽</button>
+    <div style="flex-grow: 1;"></div>
+    <button onclick="triggerImport()">匯入</button>
+    <button onclick="exportHTML()" style="background: var(--accent-hover);">匯出</button>
+</div>
+
+<nav id="toc-container">
+    <h4>目錄</h4>
+    <ul id="toc-list"></ul>
+</nav>
+
+<div class="main-content-wrapper">
+    <div id="custom-modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0">插入連結</h3>
+            <input type="text" id="link-text" placeholder="顯示文字">
+            <input type="text" id="link-url" placeholder="https://...">
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
+                <button onclick="closeModal()" style="background:transparent; border:none;">取消</button>
+                <button id="modal-confirm-btn" style="background: var(--accent-color);">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <h1 id="m-name" contenteditable="true" style="color: var(--accent-color);">Writeup Editor</h1>
+    </header>
+
+    <main id="content" contenteditable="true">
+        <h2>Venus</h2>
+        <p>選取文字後，點擊工具列中間的色塊即可加上底色。</p>
+    </main>
+</div>
+
+<input type="file" id="img-input" style="display:none" accept="image/*">
+<input type="file" id="html-import" style="display:none" accept=".html">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cplusplus.min.js"></script>
+
+<script>
+    let lastRange = null;
+    const copySVG = `<svg viewBox="0 0 24 24" width="16" fill="#c1c1c1"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
+    const checkSVG = `<svg viewBox="0 0 24 24" width="16" fill="#766DF8"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+
+    document.addEventListener('selectionchange', () => {
+        const sel = window.getSelection();
+        if (sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            if (document.getElementById('content').contains(range.commonAncestorContainer)) {
+                lastRange = range.cloneRange();
+            }
+        }
+    });
+
+    function restoreSel() {
+        if (lastRange) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(lastRange);
+        }
+    }
+
+    function handleAction(e, cb) { e.preventDefault(); restoreSel(); cb(); updateTOC(); }
+    const exec = (cmd, val = null) => { document.execCommand(cmd, false, val); updateTOC(); };
+
+    function updateTOC() {
+        const list = document.getElementById('toc-list');
+        const hs = document.getElementById('content').querySelectorAll('h2, h3');
+        list.innerHTML = "";
+        hs.forEach((h, i) => {
+            const id = "h-" + i;
+            h.id = id;
+            const li = document.createElement('li');
+            if(h.tagName === 'H3') li.className = 'toc-h3';
+            const a = document.createElement('a');
+            a.href = "#" + id;
+            a.innerText = h.innerText || "未命名標題";
+            a.onclick = (e) => { e.preventDefault(); h.scrollIntoView({ behavior: 'smooth' }); };
+            li.appendChild(a);
+            list.appendChild(li);
+        });
+    }
+
+    const obs = new MutationObserver(updateTOC);
+    obs.observe(document.getElementById('content'), { childList: true, subtree: true, characterData: true });
+
+    function openLinkModal() {
+        document.getElementById('link-text').value = window.getSelection().toString();
+        document.getElementById('link-url').value = "https://";
+        document.getElementById('custom-modal').style.display = 'flex';
+        document.getElementById('modal-confirm-btn').onclick = () => {
+            const t = document.getElementById('link-text').value;
+            const u = document.getElementById('link-url').value;
+            restoreSel();
+            exec('insertHTML', `<a href="${u}" target="_blank">${t || u}</a>`);
+            closeModal();
+        };
+    }
+    function closeModal() { document.getElementById('custom-modal').style.display = 'none'; }
+
+    function insertNode(tag, txt) {
+        const el = document.createElement(tag);
+        el.innerText = txt;
+        insertAtCursor(el);
+    }
+
+    function insertAtCursor(node) {
+        restoreSel();
+        const sel = window.getSelection();
+        if (sel.rangeCount) {
+            const range = sel.getRangeAt(0);
+            range.insertNode(node);
+            range.setStartAfter(node);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    }
+
+    function insertCode() {
+        const container = document.createElement('div');
+        container.className = 'code-container';
+        container.setAttribute('contenteditable', 'false');
+        
+        container.innerHTML = `
+            <div class="lang-badge" onclick="toggleLang(this, event)">bash</div>
+            <div class="del-code-btn" onclick="toggleDelPop(this)">×</div>
+            <div class="del-pop">
+                <span>刪除？</span>
+                <button onclick="this.closest('.code-container').remove()">是</button>
+                <button onclick="this.parentElement.style.display='none'">否</button>
+            </div>
+            <div class="copy-btn" onclick="copyText(this)">${copySVG}</div>
+            <pre class="language-bash"><code class="language-bash" contenteditable="true" onpaste="handleCodePaste(event)">code_here</code></pre>
+        `;
+        insertAtCursor(container);
+        
+        const p = document.createElement('p');
+        p.innerHTML = '<br>';
+        container.after(p);
+        
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.setStart(p, 0);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+
+    function toggleDelPop(btn) {
+        const pop = btn.parentElement.querySelector('.del-pop');
+        pop.style.display = (pop.style.display === 'flex' ? 'none' : 'flex');
+    }
+
+    function handleCodePaste(e) {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        document.execCommand("insertText", false, text);
+    }
+
+    function toggleLang(badge, e) {
+        e.stopPropagation();
+        const ls = ['bash', 'python', 'php', 'javascript', 'cpp'];
+        let cur = badge.innerText.toLowerCase();
+        let next = ls[(ls.indexOf(cur === 'c++' ? 'cpp' : cur) + 1) % ls.length];
+        badge.innerText = next === 'cpp' ? 'c++' : next;
+        
+        const pre = badge.parentElement.querySelector('pre');
+        const code = badge.parentElement.querySelector('code');
+        pre.className = 'language-' + next;
+        code.className = 'language-' + next;
+        Prism.highlightElement(code);
+    }
+
+    function copyText(btn) {
+        const container = btn.closest('.code-container');
+        const text = container.querySelector('code').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.innerHTML = checkSVG; // 只更換按鈕內部的 SVG
+            setTimeout(() => { btn.innerHTML = copySVG; }, 1500);
+        });
+    }
+
+    function refreshHighlight() { Prism.highlightAll(); }
+
+    function triggerImageUpload() { document.getElementById('img-input').click(); }
+    document.getElementById('img-input').onchange = function(e) {
+        const f = e.target.files[0];
+        if (f) {
+            const r = new FileReader();
+            r.onload = (ev) => {
+                const img = document.createElement('img');
+                img.src = ev.target.result;
+                img.className = 'inserted-img';
+                img.onclick = function() { if(document.body.classList.contains('editing') && confirm("刪除圖片？")) this.remove(); };
+                insertAtCursor(img);
+            };
+            r.readAsDataURL(f);
+        }
+    };
+
+    function triggerImport() { document.getElementById('html-import').click(); }
+    document.getElementById('html-import').onchange = function(e) {
+        const f = e.target.files[0];
+        const r = new FileReader();
+        r.onload = (ev) => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(ev.target.result, 'text/html');
+            const newC = doc.getElementById('content').innerHTML;
+            const newN = doc.getElementById('m-name').innerText;
+            if (newC) {
+                const target = document.getElementById('content');
+                target.innerHTML = newC;
+                document.getElementById('m-name').innerText = newN;
+                
+                // 匯入後重新為 Code 框補上按鈕與刪除邏輯
+                target.querySelectorAll('.code-container').forEach(cc => {
+                    cc.setAttribute('contenteditable', 'false');
+                    
+                    // 如果沒有 X 鈕，補上
+                    if(!cc.querySelector('.del-code-btn')) {
+                        const x = document.createElement('div');
+                        x.className = 'del-code-btn';
+                        x.innerText = '×';
+                        x.onclick = function() { toggleDelPop(this); };
+                        cc.prepend(x);
+                    } else {
+                        // 如果有 X 鈕，重新綁定點擊事件
+                        cc.querySelector('.del-code-btn').onclick = function() { toggleDelPop(this); };
+                    }
+                    
+                    // 如果沒有刪除彈窗，補上
+                    if(!cc.querySelector('.del-pop')) {
+                        const pop = document.createElement('div');
+                        pop.className = 'del-pop';
+                        pop.innerHTML = `<span>刪除？</span><button onclick="this.closest('.code-container').remove()">是</button><button onclick="this.parentElement.style.display='none'">否</button>`;
+                        cc.appendChild(pop);
+                    }
+                });
+
+                refreshHighlight();
+                updateTOC();
+            }
+        };
+        r.readAsText(f);
+    };
+
+    function exportHTML() {
+        updateTOC();
+        const clone = document.documentElement.cloneNode(true);
+        const body = clone.querySelector('body');
+        body.classList.remove('editing');
+        
+        ['#toolbar', '#img-input', '#html-import', '#custom-modal', '.del-code-btn', '.del-pop'].forEach(s => {
+            clone.querySelectorAll(s).forEach(el => el.remove());
+        });
+        
+        clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+        
+        const script = document.createElement('script');
+        script.innerText = `
+            document.querySelectorAll('#toc-list a').forEach(a => {
+                a.onclick = (e) => {
+                    e.preventDefault();
+                    const t = document.querySelector(a.getAttribute('href'));
+                    if(t) t.scrollIntoView({behavior:'smooth'});
+                }
+            });
+            const checkSVG = \`${checkSVG}\`;
+            const copySVG = \`${copySVG}\`;
+            function copyText(btn) {
+                const container = btn.closest('.code-container');
+                const text = container.querySelector('code').innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.innerHTML = checkSVG;
+                    setTimeout(() => { btn.innerHTML = copySVG; }, 1500);
+                });
+            }
+        `;
+        body.appendChild(script);
+        
+        const blob = new Blob(["<!DOCTYPE html>\n" + clone.outerHTML], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Writeup_${Date.now()}.html`;
+        a.click();
+    }
+
+    updateTOC();
+</script>
+</body>
+</html>
