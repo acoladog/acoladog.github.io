@@ -7,5 +7,14 @@
         "description": "HackMyVM Venus 靶機，用以初學者入門",
         "link": "./writeups/venus/",
         "date": "2026-02-20"
+    },
+    {
+        "id": 2,
+        "name": "CracktheGate1",
+        "difficulty": "入門",
+        "tags": ["Easy","Web"],
+        "description": "picoCTF入門題",
+        "link": "./writeups/CracktheGate1/",
+        "date": "2026-02-21"
     }
 ]
