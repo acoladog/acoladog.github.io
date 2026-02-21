@@ -34,5 +34,14 @@
         "description": "picoCTF入門題",
         "link": "./writeups/head-dump/",
         "date": "2026-02-21"
+    },
+    {
+        "id": 5,
+        "name": "byp4ss3d",
+        "difficulty": "入門",
+        "tags": ["Medium","Web"],
+        "description": "picoCTF中等題",
+        "link": "./writeups/byp4ss3d/",
+        "date": "2026-02-21"
     }
 ]
