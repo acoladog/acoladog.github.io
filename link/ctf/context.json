@@ -25,5 +25,14 @@
         "description": "picoCTF入門題",
         "link": "./writeups/SSTI1/",
         "date": "2026-02-21"
+    },
+    {
+        "id": 4,
+        "name": "head-dump",
+        "difficulty": "入門",
+        "tags": ["Easy","Web"],
+        "description": "picoCTF入門題",
+        "link": "./writeups/head-dump/",
+        "date": "2026-02-21"
     }
 ]
